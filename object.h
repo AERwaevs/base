@@ -6,10 +6,9 @@
 #include "platform.h"
 #include "ref_ptr.h"
 
-template< typename T = uint32_t >
+template< std::unsigned_integral ref_ctr = uint32_t >
 class AEON_DLL object_t
 {
-    static_assert( std::is_integral_v<T> && std::is_unsigned_v<T> );
     static constexpr inline auto default_order = std::memory_order_seq_cst;
 
 public:
@@ -40,11 +39,11 @@ protected:
     friend class ref_ptr;
 
 private:
-    mutable std::atomic<T> _references;
+    mutable std::atomic<ref_ctr> _references;
 };
 
-template< typename T >
-class AEON_DLL Object : public object_t<>
+template< typename T, std::unsigned_integral ref_ctr = uint32_t >
+class AEON_DLL Object : public object_t< ref_ctr >
 {
 public:
     template< typename... Args >
@@ -54,5 +53,5 @@ public:
     }
 protected:
     template< typename... Args >
-    Object( Args&&... args ) : object_t() {}
+    Object( Args&&... args ) : object_t< ref_ctr >() {}
 };
