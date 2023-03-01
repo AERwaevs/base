@@ -42,8 +42,8 @@ private:
     mutable std::atomic<ref_ctr> _references;
 };
 
-template< typename T, std::unsigned_integral ref_ctr = uint32_t >
-class AEON_DLL Object : public object_t< ref_ctr >
+template< typename T >
+class AEON_DLL Object : public object_t<>
 {
 public:
     template< typename... Args >
@@ -53,5 +53,5 @@ public:
     }
 protected:
     template< typename... Args >
-    Object( Args&&... args ) : object_t< ref_ctr >() {}
+    Object( Args&&... args ) : object_t() {}
 };
