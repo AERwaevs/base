@@ -19,7 +19,7 @@ public:
     }
 
 protected:
-    explicit object_t() noexcept : _references( 1 ) {}
+    explicit object_t() noexcept : _references( 0 ) {}
     virtual ~object_t()                             {}
              object_t( object_t&& )      = delete;
              object_t( const object_t& ) = delete;
