@@ -6,7 +6,7 @@
 #include "platform.h"
 #include "ref_ptr.h"
 
-template< std::unsigned_integral ref_ctr = uint32_t >
+template< std::unsigned_integral ref_t = uint32_t >
 class AEON_DLL object_t
 {
     static constexpr inline auto default_order = std::memory_order_seq_cst;
