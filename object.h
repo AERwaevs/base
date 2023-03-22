@@ -24,12 +24,12 @@ protected:
              object_t( const object_t& ) = delete;
 
 private:
-    inline auto ref( std::memory_order order = default_order ) const noexcept
+    inline auto _ref( std::memory_order order = default_order ) const noexcept
     { 
         _references.fetch_add( 1, order );
     }
 
-    inline auto unref( std::memory_order order = default_order ) const noexcept 
+    inline auto _unref( std::memory_order order = default_order ) const noexcept 
     { 
         if( _references.fetch_sub( 1, order ) <= 1 ) delete this;
     }
@@ -39,7 +39,7 @@ protected:
     friend class ref_ptr;
 
 private:
-    mutable std::atomic<ref_ctr> _references;
+    mutable std::atomic<ref_t> _references;
 };
 
 template< typename T >
