@@ -12,6 +12,7 @@
 #include <set>
 
 #include "platform.h"
+#include "log.h"
 #include "object.h"
 #include "ref_ptr.h"
 #include "spy_ptr.h"
