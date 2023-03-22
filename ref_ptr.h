@@ -15,8 +15,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 //template< typename T >
 //concept has_reference_methods = requires( T t )
 //{
-//    t.ref();
-//    t.unref();
+//    t._ref();
+//    t._unref();
 //};
 //
 //template< typename T >
@@ -32,20 +32,20 @@ public:
     using element_type = T;
 
     ref_ptr()                        noexcept : ptr( nullptr ) {}
-    ~ref_ptr()                       noexcept                  { if( ptr ) ptr->unref(); }
+    ~ref_ptr()                       noexcept                  { if( ptr ) ptr->_unref(); }
     
-    ref_ptr( const ref_ptr& rhs )    noexcept : ptr( rhs.ptr ) { if( ptr ) ptr->ref(); }
+    ref_ptr( const ref_ptr& rhs )    noexcept : ptr( rhs.ptr ) { if( ptr ) ptr->_ref(); }
 
     template< class R >
     ref_ptr( ref_ptr<R>&& rhs )      noexcept : ptr( rhs.ptr ) { rhs.ptr = nullptr; }
 
     template< class R >
-    ref_ptr( const ref_ptr<R>& rhs ) noexcept : ptr( rhs.ptr ) { if( ptr ) ptr->ref(); }
+    ref_ptr( const ref_ptr<R>& rhs ) noexcept : ptr( rhs.ptr ) { if( ptr ) ptr->_ref(); }
 
-    explicit ref_ptr( T* rhs )       noexcept : ptr( rhs )     { if( ptr ) ptr->ref(); }
+    explicit ref_ptr( T* rhs )       noexcept : ptr( rhs )     { if( ptr ) ptr->_ref(); }
 
     template< class R >
-    explicit ref_ptr( R* rhs )       noexcept : ptr( rhs )     { if( ptr ) ptr->ref(); }
+    explicit ref_ptr( R* rhs )       noexcept : ptr( rhs )     { if( ptr ) ptr->_ref(); }
 
     ref_ptr& operator = ( T* rhs )
     {
@@ -53,8 +53,8 @@ public:
         {
             T*  tmp_ptr = ptr;
                 ptr     = rhs;
-            if( ptr )     ptr->ref();
-            if( tmp_ptr ) tmp_ptr->unref();
+            if( ptr )     ptr->_ref();
+            if( tmp_ptr ) tmp_ptr->_unref();
         }
         return *this;
     }
@@ -65,8 +65,8 @@ public:
         {
             T*  tmp_ptr = ptr;
                 ptr     = rhs.ptr;
-            if( ptr )     ptr->ref();
-            if( tmp_ptr ) tmp_ptr->unref();
+            if( ptr )     ptr->_ref();
+            if( tmp_ptr ) tmp_ptr->_unref();
         }
         return *this;
     }
@@ -78,8 +78,8 @@ public:
         {
             T*  tmp_ptr = ptr;
                 ptr     = rhs.ptr;
-            if( ptr )     ptr->ref();
-            if( tmp_ptr ) tmp_ptr->unref();
+            if( ptr )     ptr->_ref();
+            if( tmp_ptr ) tmp_ptr->_unref();
         }
         return *this;
     }
@@ -89,7 +89,7 @@ public:
     {
         if( ptr != rhs.ptr )
         {
-            if( ptr )     ptr->unref();
+            if( ptr )     ptr->_unref();
                 ptr     = rhs.ptr;
                 rhs.ptr = nullptr;
         }
