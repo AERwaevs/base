@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Vendor/loguru/loguru.hpp>
+#include "../Vendor/loguru/loguru.hpp"
 
 namespace AEON::Log
 {
