@@ -2,56 +2,69 @@
 
 #include <atomic>
 #include <typeinfo>
+#include <concepts>
 
 #include "platform.h"
 #include "ref_ptr.h"
 
-template< std::unsigned_integral ref_t = uint32_t >
-class AEON_DLL object_t
-{
-    static constexpr inline auto default_order = std::memory_order_seq_cst;
+template< typename T >
+concept object = requires{ { ref_ptr<T>().get() } -> std::same_as<T*>; };
 
+template< std::unsigned_integral ref_t = uint32_t >
+class AEON_DLL Object
+{
 public:
-    inline auto ref_count( std::memory_order order = default_order ) const noexcept
+    inline auto ref_count( std::memory_order order = std::memory_order_relaxed ) const noexcept
     { 
         return _references.load(); 
     }
 
 protected:
-    explicit object_t() noexcept : _references( 0 ) {}
-    virtual ~object_t()                             {}
-             object_t( object_t&& )      = delete;
-             object_t( const object_t& ) = delete;
+    explicit Object() noexcept : _references( 0 ) {}
+    virtual ~Object()                = default;
+             Object( Object&& )      = delete;
+             Object( const Object& ) = delete;
 
 private:
-    inline auto _ref( std::memory_order order = default_order ) const noexcept
+    inline auto _ref( std::memory_order order = std::memory_order_relaxed ) const noexcept
     { 
         _references.fetch_add( 1, order );
     }
 
-    inline auto _unref( std::memory_order order = default_order ) const noexcept 
+    inline auto _unref( std::memory_order order = std::memory_order_seq_cst ) const noexcept 
     { 
         if( _references.fetch_sub( 1, order ) <= 1 ) delete this;
+    }
+
+    template< class T, class R >
+    T* _cast( R* other )
+    {
+        return other ? other->template _cast<T>() : nullptr;
     }
 
 protected:
     template< class R >
     friend class ref_ptr;
-
+private:
+    template< object R >
+    friend struct ICreatable;
+    
 private:
     mutable std::atomic<ref_t> _references;
 };
 
-template< typename T >
-class AEON_DLL Object : public object_t<>
+template< object T = Object<> >
+struct ICreatable
 {
-public:
     template< typename... Args >
-    static inline auto create( Args&&... args )
+    static auto create( Args&&... args )
     {
         return ref_ptr<T>( new T( std::forward<Args>( args )... ) );
     }
-protected:
-    template< typename... Args >
-    Object( Args&&... args ) : object_t() {}
+};
+
+template< typename T, typename... Args >
+concept creatable = requires( Args... args )
+{
+    { T::create( args... ).get() } -> std::same_as<T>;
 };

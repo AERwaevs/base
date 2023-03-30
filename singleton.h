@@ -3,17 +3,22 @@
 #include "object.h"
 #include "ref_ptr.h"
 
-template< typename T >
-class Singleton : public object_t<>
+template< object T = ICreatable<> >
+struct ISingleton
 {
-public:
     template< typename... Args >
-    static ref_ptr<T>& instance( Args&&... args )
+    static ref_ptr<T> instance( Args&&... args )
     {
-        static ref_ptr<T> s_instance( new T( std::forward<Args>( args )... ) );
-        return s_instance;
+        if( !_instance ) _instance = new T( std::forward<Args>( args )... );
+        return ref_ptr<T>( _instance );
+    }
+
+    template< typename Type, typename... Args >
+    requires std::derived_from< Type, T >
+    static auto instance( Args&&... args )
+    {
+        return _cast<Type>( instance() );
     }
 protected:
-    template< typename... Args >
-    Singleton( Args&&... args ) : object_t( std::forward<Args>( args )... ) {}
+    static inline T* _instance;
 };
