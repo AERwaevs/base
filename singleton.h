@@ -1,24 +1,36 @@
 #pragma once
 
+#include <concepts>
+
 #include "object.h"
 #include "ref_ptr.h"
 
-template< object T = ICreatable<> >
-struct ISingleton
+template< object O = Object >
+struct ISingleton : public virtual Object
 {
-    template< typename... Args >
-    static ref_ptr<T> instance( Args&&... args )
-    {
-        if( !_instance ) _instance = new T( std::forward<Args>( args )... );
-        return ref_ptr<T>( _instance );
-    }
+    using type = O;
 
-    template< typename Type, typename... Args >
-    requires std::derived_from< Type, T >
-    static auto instance( Args&&... args )
+    static auto instance()
     {
-        return _cast<Type>( instance() );
+        if( !_instance ) _instance = new O();
+        return ref_ptr<O>( _instance );
     }
 protected:
-    static inline T* _instance;
+    static inline O* _instance;
+};
+
+template< typename F, object O >
+requires( std::constructible_from<F> )
+struct ISingletonFrom : public virtual Object
+{
+    using From = F;
+    
+    template< F From, typename T = void, typename std::enable_if_t< std::same_as< T, F > > >
+    static auto instance()
+    {
+        if( !_instance ) _instance = new T();
+        return ref_ptr<T>( _instance );
+    }
+protected:
+    static inline O* _instance;
 };

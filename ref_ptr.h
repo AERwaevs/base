@@ -29,7 +29,7 @@ template< class T >
 class ref_ptr
 {
 public:
-    using element_type = T;
+    using type = T;
 
     ref_ptr()                        noexcept : ptr( nullptr ) {}
     ~ref_ptr()                       noexcept                  { if( ptr ) ptr->_unref(); }
@@ -132,7 +132,7 @@ public:
     template< class R >
     bool operator != ( const R* rhs )          const { return ( ptr != rhs ); }
 
-    bool valid()                      const noexcept { return ptr != nullptr; }
+    bool valid()                      const noexcept { return ( ptr != nullptr ); }
 
     explicit operator bool()          const noexcept { return valid(); }
 
@@ -157,10 +157,6 @@ public:
 protected:
     template< class R >
     friend class    ref_ptr;
-    template< class R >
-    friend struct   is_referenced;
-    template< class R >
-    friend struct   is_creatable;
     
 protected:
     T* ptr = nullptr;

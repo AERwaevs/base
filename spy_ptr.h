@@ -16,7 +16,7 @@ template< class T >
 class spy_ptr
 {
 public:
-    using element_type = T;
+    using type = T;
 
     spy_ptr()                                 : ptr( nullptr )   {}
     spy_ptr( const spy_ptr& rhs )             : ptr( rhs.ptr )   {}

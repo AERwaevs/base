@@ -14,6 +14,7 @@
 #include "platform.h"
 #include "log.h"
 #include "object.h"
+#include "implements.h"
 #include "ref_ptr.h"
 #include "spy_ptr.h"
 #include "singleton.h"

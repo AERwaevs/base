@@ -10,7 +10,12 @@
 template< typename T >
 concept object = requires{ { ref_ptr<T>().get() } -> std::same_as<T*>; };
 
-template< std::unsigned_integral ref_t = uint32_t >
+template< typename T, typename... Args >
+concept creatable = requires( Args... args )
+{
+    { T::create( args... ).get() } -> std::same_as<T*>;
+};
+
 class AEON_DLL Object
 {
 public:
@@ -36,12 +41,6 @@ private:
         if( _references.fetch_sub( 1, order ) <= 1 ) delete this;
     }
 
-    template< class T, class R >
-    T* _cast( R* other )
-    {
-        return other ? other->template _cast<T>() : nullptr;
-    }
-
 protected:
     template< class R >
     friend class ref_ptr;
@@ -50,21 +49,31 @@ private:
     friend struct ICreatable;
     
 private:
-    mutable std::atomic<ref_t> _references;
+    mutable std::atomic_uint32_t _references;
 };
 
-template< object T = Object<> >
-struct ICreatable
+template< object O = Object >
+struct ICreatable : public virtual Object
 {
     template< typename... Args >
-    static auto create( Args&&... args )
+    static constexpr auto create( Args&&... args )
     {
-        return ref_ptr<T>( new T( std::forward<Args>( args )... ) );
+        return ref_ptr<O>( new O( std::forward<Args>( args )... ) );
+    }
+
+    template< typename... Args >
+    static constexpr auto create_if( bool flag, Args&&... args )
+    {
+        return ref_ptr<O>( flag ? new O( std::forward<Args>( args )... ) : nullptr );
     }
 };
 
-template< typename T, typename... Args >
-concept creatable = requires( Args... args )
+template< typename F, object O = Object >
+struct ICreatableFrom : public virtual Object
 {
-    { T::create( args... ).get() } -> std::same_as<T>;
+    template< F From, typename... Args >
+    static constexpr auto create( Args&&... args )
+    {
+        return ref_ptr<O>( new O( std::forward<Args>( args )... ) );
+    }
 };
