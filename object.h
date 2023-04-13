@@ -19,11 +19,11 @@ concept creatable = requires( Args... args )
 class AEON_DLL Object
 {
 public:
-    inline auto ref_count( std::memory_order order = std::memory_order_relaxed ) const noexcept
+    constexpr inline auto   ref_count( std::memory_order order = std::memory_order_relaxed ) const noexcept
     { 
         return _references.load(); 
     }
-
+    
 protected:
     explicit Object() noexcept : _references( 0 ) {}
     virtual ~Object()                = default;
@@ -31,12 +31,12 @@ protected:
              Object( const Object& ) = delete;
 
 private:
-    inline auto _ref( std::memory_order order = std::memory_order_relaxed ) const noexcept
+    constexpr inline void _ref( std::memory_order order = std::memory_order_relaxed ) const noexcept
     { 
         _references.fetch_add( 1, order );
     }
 
-    inline auto _unref( std::memory_order order = std::memory_order_seq_cst ) const noexcept 
+    constexpr inline void _unref( std::memory_order order = std::memory_order_seq_cst ) const noexcept 
     { 
         if( _references.fetch_sub( 1, order ) <= 1 ) delete this;
     }
@@ -53,7 +53,7 @@ private:
 };
 
 template< object O = Object >
-struct ICreatable : public virtual Object
+struct ICreatable
 {
     template< typename... Args >
     static constexpr auto create( Args&&... args )
@@ -69,7 +69,7 @@ struct ICreatable : public virtual Object
 };
 
 template< typename F, object O = Object >
-struct ICreatableFrom : public virtual Object
+struct ICreatableFrom
 {
     template< F From, typename... Args >
     static constexpr auto create( Args&&... args )

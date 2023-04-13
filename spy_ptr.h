@@ -74,6 +74,8 @@ public:
     template< class R >
     operator ref_ptr<R>() const { return valid() ? ref_ptr<R>( ptr ) : ref_ptr<R>(); }
 
+    ref_ptr<T> load() const { return ref_ptr<T>(*this); }
+
 protected:
     template< class R >
     friend class spy_ptr;
