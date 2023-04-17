@@ -46,34 +46,31 @@ protected:
     friend class ref_ptr;
 private:
     template< object R >
-    friend struct ICreatable;
+    friend struct ICreate;
+
+    template< object R >
+    friend struct ICreateIf;
     
 private:
     mutable std::atomic_uint32_t _references;
 };
 
 template< object O = Object >
-struct ICreatable
+struct ICreate
 {
     template< typename... Args >
     static constexpr auto create( Args&&... args )
     {
         return ref_ptr<O>( new O( std::forward<Args>( args )... ) );
     }
+};
 
+template< object O = Object >
+struct ICreateIf
+{
     template< typename... Args >
     static constexpr auto create_if( bool flag, Args&&... args )
     {
         return ref_ptr<O>( flag ? new O( std::forward<Args>( args )... ) : nullptr );
-    }
-};
-
-template< typename F, object O = Object >
-struct ICreatableFrom
-{
-    template< F From, typename... Args >
-    static constexpr auto create( Args&&... args )
-    {
-        return ref_ptr<O>( new O( std::forward<Args>( args )... ) );
     }
 };
