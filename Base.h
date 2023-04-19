@@ -28,6 +28,8 @@
 
 namespace AEON
 {
+    using floats            = std::vector<float>;
+    using ints              = std::vector<int>;
     using String            = std::string;
     using SteadyClock       = std::chrono::steady_clock;
     using TimePoint         = std::chrono::steady_clock::time_point;
@@ -38,10 +40,6 @@ namespace AEON
     using Function      = std::function< Type >;
     template< typename Type >
     using Vector        = std::vector< Type >;
-    template< typename Type >  
-    using Shared        = ref_ptr< Type >;
-    template< typename Type >
-    using Observer      = spy_ptr< Type >;
     template< typename Type >
     using List          = std::list< Type >;
     template< typename Type1, typename Type2 >
