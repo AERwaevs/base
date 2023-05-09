@@ -21,10 +21,11 @@
 #include "singleton.h"
 
 #define BIT( bit ) 1 << bit
+#define STR( str ) #str
 
 #define AEON_TYPE_NAME( T ) \
-    template<> constexpr const char*    AEON::GetName( typename T )    noexcept { return #T; } \
-    template<> constexpr const String   AEON::ToString( typename T )   noexcept { return T::GetName(); } \
+    template<> constexpr const char* type_name<T>()                 noexcept { return #T; } \
+    template<> constexpr const char* type_name<const T>( const T& ) noexcept { return "const "#T; } \
 
 namespace AEON
 {
@@ -40,10 +41,6 @@ namespace AEON
     using Function      = std::function< Type >;
     template< typename Type >
     using Vector        = std::vector< Type >;
-    template< typename Type >  
-    using Shared        = ref_ptr< Type >;
-    template< typename Type >
-    using Observer      = spy_ptr< Type >;
     template< typename Type >
     using List          = std::list< Type >;
     template< typename Type1, typename Type2 >
@@ -54,4 +51,16 @@ namespace AEON
     {
 
     };
+
+    template< typename T > constexpr const char* type_name()           noexcept { return typeid(T).name(); }
+    template< typename T > constexpr const char* type_name( const T& ) noexcept { return type_name<T>(); }
+
+    template< typename T >
+    struct ITypeInfo
+    {
+        constexpr const char*           type_name() noexcept { return type_name<T>(); }
+        constexpr const std::type_info& type_info() noexcept { return typeid(T);      }
+        constexpr const std::size_t     type_size() noexcept { return sizeof(T);      }
+    };
+
 }

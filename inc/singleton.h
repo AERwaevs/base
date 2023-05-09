@@ -6,22 +6,22 @@
 #include "ref_ptr.h"
 
 template< object O = Object >
-struct ISingleton : public virtual Object
+struct ISingleton
 {
     using type = O;
 
-    static auto instance()
+    template< typename... Args >
+    static auto instance( Args&&... args )
     {
-        if( !_instance ) _instance = new O();
+        static O* _instance;
+        if( !_instance ) _instance = new O( std::forward<Args>( args )... );
         return ref_ptr<O>( _instance );
     }
-protected:
-    static inline O* _instance;
 };
 
 template< typename F, object O >
 requires( std::constructible_from<F> )
-struct ISingletonFrom : public virtual Object
+struct ISingletonFrom
 {
     using From = F;
     

@@ -4,7 +4,7 @@
 
 #include "object.h"
 
-template< typename T, template< typename > typename... Interfaces >
+template< object T, template< typename > typename... Interfaces >
 struct Implements : public virtual Interfaces<T>...
 {
 
