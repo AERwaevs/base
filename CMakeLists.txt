@@ -7,7 +7,7 @@ set( CMAKE_CXX_EXTENSIONS        OFF )
 # AEON::Base --------------------------------------------------------------------------------------
 set( BASE_LIB ${CMAKE_CURRENT_SOURCE_DIR}/lib )
 set( BASE_INC ${CMAKE_CURRENT_SOURCE_DIR}/inc )
-set( BASE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src )
+set( BASE_SRC ${BASE_INC}/Base )
 
 set( STD_HEADERS
     <iostream>
@@ -24,19 +24,20 @@ set( STD_HEADERS
 )
 
 set( HEADERS
-    ${BASE_INC}/Base.h
-    ${BASE_INC}/platform.h
-    ${BASE_INC}/log.h
-    ${BASE_INC}/object.h
-    ${BASE_INC}/implements.h
-    ${BASE_INC}/ref_ptr.h
-    ${BASE_INC}/spy_ptr.h
-    ${BASE_INC}/singleton.h
+    ${BASE_SRC}/Base.h
+    ${BASE_SRC}/platform.h
+    ${BASE_SRC}/log.h
+    ${BASE_SRC}/object.h
+    ${BASE_SRC}/implements.h
+    ${BASE_SRC}/ref_ptr.h
+    ${BASE_SRC}/spy_ptr.h
+    ${BASE_SRC}/singleton.h
 )
 
 add_library(                aeon-base STATIC ${HEADERS} )
+target_include_directories( aeon-base PUBLIC ${BASE_INC} PRIVATE ${BASE_LIB} )
 target_precompile_headers(  aeon-base PUBLIC ${STD_HEADERS} )
-target_include_directories( aeon-base PUBLIC ${BASE_INC} )
+target_compile_features(    aeon-base PUBLIC cxx_std_20)
 # submodules --------------------------------------------------------------------------------------
 find_package( Git QUIET )
 if( GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git" )
