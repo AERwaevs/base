@@ -28,6 +28,8 @@
 
 namespace AEON
 {
+    using floats            = std::vector<float>;
+    using ints              = std::vector<int>;
     using String            = std::string;
     using SteadyClock       = std::chrono::steady_clock;
     using TimePoint         = std::chrono::steady_clock::time_point;
@@ -46,4 +48,10 @@ namespace AEON
     using List          = std::list< Type >;
     template< typename Type1, typename Type2 >
     using Map           = std::map< Type1, Type2 >;
+    
+    template< typename T, template< typename > typename... _Interfaces >
+    struct Interfaces : public virtual _Interfaces<T>...
+    {
+
+    };
 }

@@ -1,6 +1,8 @@
 #pragma once
 
-#include "../Vendor/loguru/loguru.hpp"
+// #include <loguru/loguru.hpp>
+//? this should be able to use angled brackets but fails?
+#include "../lib/loguru/loguru.hpp"
 
 namespace AEON::Log
 {
