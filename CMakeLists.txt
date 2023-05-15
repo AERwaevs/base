@@ -1,9 +1,5 @@
 # cmake -------------------------------------------------------------------------------------------
 cmake_minimum_required( VERSION 3.2.0 )
-
-set( CMAKE_CXX_STANDARD          20  )
-set( CMAKE_CXX_STANDARD_REQUIRED ON  )
-set( CMAKE_CXX_EXTENSIONS        OFF )
 # AEON::Base --------------------------------------------------------------------------------------
 set( BASE_LIB ${CMAKE_CURRENT_SOURCE_DIR}/lib )
 set( BASE_INC ${CMAKE_CURRENT_SOURCE_DIR}/inc )
@@ -34,13 +30,24 @@ set( HEADERS
     ${BASE_SRC}/singleton.h
 )
 
-add_library(                aeon-base STATIC ${HEADERS} )
-target_include_directories( aeon-base PUBLIC ${BASE_INC} PRIVATE ${BASE_LIB} )
-target_precompile_headers(  aeon-base PUBLIC ${STD_HEADERS} )
-target_compile_features(    aeon-base PUBLIC cxx_std_20)
+add_library( aeon-base STATIC ${HEADERS} ${BASE_LIB}/loguru/loguru.cpp )
+set_target_properties( aeon-base
+    PROPERTIES 
+    CXX_STANDARD    20
+    LINKER_LANGUAGE CXX
+)
+target_include_directories( aeon-base 
+    PUBLIC
+        $<BUILD_INTERFACE:${BASE_INC}>
+        $<BUILD_INTERFACE:${BASE_LIB}>
+        $<INSTALL_INTERFACE:inc>
+)
+target_precompile_headers( aeon-base PUBLIC ${STD_HEADERS} )
+target_compile_features(   aeon-base PUBLIC cxx_std_20 )
+target_compile_definitions( aeon-base PUBLIC NOMINMAX )
 # submodules --------------------------------------------------------------------------------------
 find_package( Git QUIET )
-if( GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git" )
+if( GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git" )
     option( GIT_SUBMODULE "Check submodules during build" ON )
     if( GIT_SUBMODULE )
         message(STATUS "Submodule update")
@@ -53,6 +60,6 @@ if( GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git" )
     endif()
 endif()
 # loguru ------------------------------------------------------------------------------------------
-add_subdirectory(           ${BASE_LIB}/loguru )
-add_dependencies(           aeon-base loguru::loguru )
-target_link_libraries(      aeon-base PRIVATE loguru::loguru )
+# loguru's cmake integration currently not working
+# add_subdirectory(           ${BASE_LIB}/loguru )
+# target_link_libraries(      aeon-base PRIVATE loguru::loguru )
