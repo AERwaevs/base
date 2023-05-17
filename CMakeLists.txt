@@ -44,7 +44,7 @@ target_include_directories( aeon-base
 )
 target_precompile_headers( aeon-base PUBLIC ${STD_HEADERS} )
 target_compile_features(   aeon-base PUBLIC cxx_std_20 )
-target_compile_definitions( aeon-base PUBLIC NOMINMAX )
+target_compile_definitions( aeon-base PUBLIC NOMINMAX AEON_DEBUG )
 # submodules --------------------------------------------------------------------------------------
 find_package( Git QUIET )
 if( GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git" )
