@@ -11,26 +11,11 @@ struct ISingleton
     using type = O;
 
     template< typename... Args >
-    static auto instance( Args&&... args )
+    static auto get_or_create( Args&&... args )
     {
-        static O* _instance;
-        if( !_instance ) _instance = new O( std::forward<Args>( args )... );
-        return ref_ptr<O>( _instance );
-    }
-};
-
-template< typename F, object O >
-requires( std::constructible_from<F> )
-struct ISingletonFrom
-{
-    using From = F;
-    
-    template< F From, typename T = void, typename std::enable_if_t< std::same_as< T, F > > >
-    static auto instance()
-    {
-        if( !_instance ) _instance = new T();
-        return ref_ptr<T>( _instance );
+        if( !_singleton ) _singleton = O::create( args... );
+        return _singleton;
     }
 protected:
-    static inline O* _instance;
+    static inline ref_ptr<O> _singleton;
 };
