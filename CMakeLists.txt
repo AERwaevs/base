@@ -39,8 +39,9 @@ set_target_properties( aeon-base
 target_include_directories( aeon-base 
     PUBLIC
         $<BUILD_INTERFACE:${BASE_INC}>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    PRIVATE
         $<BUILD_INTERFACE:${BASE_LIB}>
-        $<INSTALL_INTERFACE:inc>
 )
 #target_precompile_headers( aeon-base PUBLIC ${STD_HEADERS} )
 target_compile_features(   aeon-base PUBLIC cxx_std_20 )
@@ -60,6 +61,9 @@ if( GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git" )
     endif()
 endif()
 # loguru ------------------------------------------------------------------------------------------
+add_library( loguru STATIC ${BASE_LIB}/loguru/loguru.cpp )
+target_link_libraries( aeon-base PRIVATE loguru )
+
 # loguru's cmake integration currently not working
 # add_subdirectory(           ${BASE_LIB}/loguru )
 # target_link_libraries(      aeon-base PRIVATE loguru::loguru )
