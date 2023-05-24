@@ -27,7 +27,7 @@ protected:
     requires std::invocable< F, E >
     bool OnEvent( E& event ) 
     {
-        return F(E);
+        return F( event );
     }
     
 protected:

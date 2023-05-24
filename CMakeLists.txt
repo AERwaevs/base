@@ -30,7 +30,7 @@ set( HEADERS
     ${BASE_SRC}/singleton.h
 )
 
-add_library( aeon-base STATIC ${HEADERS} ${BASE_LIB}/loguru/loguru.cpp )
+add_library( aeon-base STATIC ${HEADERS} )
 set_target_properties( aeon-base
     PROPERTIES 
     CXX_STANDARD    20
@@ -42,15 +42,15 @@ target_include_directories( aeon-base
         $<BUILD_INTERFACE:${BASE_LIB}>
         $<INSTALL_INTERFACE:inc>
 )
-target_precompile_headers( aeon-base PUBLIC ${STD_HEADERS} )
+#target_precompile_headers( aeon-base PUBLIC ${STD_HEADERS} )
 target_compile_features(   aeon-base PUBLIC cxx_std_20 )
-target_compile_definitions( aeon-base PUBLIC NOMINMAX AEON_DEBUG )
+target_compile_definitions( aeon-base PUBLIC AEON_DEBUG )
 # submodules --------------------------------------------------------------------------------------
 find_package( Git QUIET )
 if( GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git" )
     option( GIT_SUBMODULE "Check submodules during build" ON )
     if( GIT_SUBMODULE )
-        message(STATUS "Submodule update")
+        message(STATUS "Base submodule update")
         execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
                         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                         RESULT_VARIABLE GIT_SUBMOD_RESULT)
@@ -63,3 +63,6 @@ endif()
 # loguru's cmake integration currently not working
 # add_subdirectory(           ${BASE_LIB}/loguru )
 # target_link_libraries(      aeon-base PRIVATE loguru::loguru )
+set( LOGURU_DIR ${BASE_LIB}/loguru )
+add_library( loguru STATIC ${LOGURU_DIR}/loguru.hpp ${LOGURU_DIR}/loguru.cpp )
+target_link_libraries( loguru PRIVATE dl pthread )
