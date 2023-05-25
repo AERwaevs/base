@@ -58,9 +58,9 @@ namespace AEON
     template< typename T >
     struct ITypeInfo
     {
-        constexpr const char*           type_name() noexcept { return type_name<T>(); }
-        constexpr const std::type_info& type_info() noexcept { return typeid(T);      }
-        constexpr const std::size_t     type_size() noexcept { return sizeof(T);      }
+        constexpr const char*           type_name() noexcept { return typeid(T).name(); }
+        constexpr const std::type_info& type_info() noexcept { return typeid(T);        }
+        constexpr const std::size_t     type_size() noexcept { return sizeof(T);        }
     };
 
 }

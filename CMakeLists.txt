@@ -30,7 +30,12 @@ set( HEADERS
     ${BASE_SRC}/singleton.h
 )
 
-add_library( aeon-base STATIC ${HEADERS} )
+set( LOGURU_SRC 
+    ${BASE_LIB}/loguru/loguru.hpp 
+    ${BASE_LIB}/loguru/loguru.cpp
+)
+
+add_library( aeon-base STATIC ${HEADERS} ${LOGURU_SRC} )
 set_target_properties( aeon-base
     PROPERTIES 
     CXX_STANDARD    20
@@ -61,12 +66,6 @@ if( GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git" )
     endif()
 endif()
 # loguru ------------------------------------------------------------------------------------------
-add_library( loguru STATIC ${BASE_LIB}/loguru/loguru.cpp )
-target_link_libraries( aeon-base PRIVATE loguru )
 
-# loguru's cmake integration currently not working
-# add_subdirectory(           ${BASE_LIB}/loguru )
-# target_link_libraries(      aeon-base PRIVATE loguru::loguru )
-set( LOGURU_DIR ${BASE_LIB}/loguru )
-add_library( loguru STATIC ${LOGURU_DIR}/loguru.hpp ${LOGURU_DIR}/loguru.cpp )
-target_link_libraries( loguru PRIVATE dl pthread )
+#add_library( loguru STATIC ${LOGURU_SRC} )
+#target_link_libraries( aeon-base PUBLIC loguru )

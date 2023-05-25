@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #define LOGURU_EXPORT
 //#include <loguru/loguru.hpp>
 //? this should be able to use angled brackets but fails?
@@ -9,11 +11,13 @@ namespace AEON::Log
 {
     inline void Init( int argc, char** argv )
     {
-        loguru::g_preamble_header       = false;
-        loguru::g_stderr_verbosity      = loguru::Verbosity_INFO;
-        loguru::g_internal_verbosity    = loguru::Verbosity_MAX;
-        loguru::g_flush_interval_ms     = 100;
-        loguru::init( argc, argv );
+        using namespace loguru;
+
+        g_preamble_header       = false;
+        g_stderr_verbosity      = Verbosity_INFO;
+        g_internal_verbosity    = Verbosity_MAX;
+        g_flush_interval_ms     = 100;
+        init( argc, argv );
     }
 
     inline void New(    const std::string&  log_name    = "AEON", 
