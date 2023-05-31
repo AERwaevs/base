@@ -35,37 +35,21 @@ set( LOGURU_SRC
     ${BASE_LIB}/loguru/loguru.cpp
 )
 
-add_library( aeon-base STATIC ${HEADERS} ${LOGURU_SRC} )
-set_target_properties( aeon-base
+add_library( base STATIC ${HEADERS} ${LOGURU_SRC} )
+set_target_properties( base
     PROPERTIES 
     CXX_STANDARD    20
     LINKER_LANGUAGE CXX
 )
-target_include_directories( aeon-base 
+target_include_directories( base 
     PUBLIC
         $<BUILD_INTERFACE:${BASE_INC}>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     PRIVATE
         $<BUILD_INTERFACE:${BASE_LIB}>
 )
-#target_precompile_headers( aeon-base PUBLIC ${STD_HEADERS} )
-target_compile_features(   aeon-base PUBLIC cxx_std_20 )
-target_compile_definitions( aeon-base PUBLIC AEON_DEBUG )
-# submodules --------------------------------------------------------------------------------------
-find_package( Git QUIET )
-if( GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git" )
-    option( GIT_SUBMODULE "Check submodules during build" ON )
-    if( GIT_SUBMODULE )
-        message(STATUS "Base submodule update")
-        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                        RESULT_VARIABLE GIT_SUBMOD_RESULT)
-        if(NOT GIT_SUBMOD_RESULT EQUAL "0")
-            message(FATAL_ERROR "git submodule update --init --recursive failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
-        endif()
-    endif()
-endif()
-# loguru ------------------------------------------------------------------------------------------
+#target_precompile_headers( base PUBLIC ${STD_HEADERS} )
+target_compile_features(   base PUBLIC cxx_std_20 )
+target_compile_definitions( base PUBLIC AEON_DEBUG )
 
-#add_library( loguru STATIC ${LOGURU_SRC} )
-#target_link_libraries( aeon-base PUBLIC loguru )
+add_library( aer::base ALIAS base )
