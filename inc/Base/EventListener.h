@@ -3,7 +3,7 @@
 #include "Event.h"
 #include "Base.h"
 
-namespace AEON
+namespace aer
 {
 
 template< typename T >
@@ -34,4 +34,4 @@ protected:
     Events _events;
 };
 
-} // namespace AEON
+} // namespace aer

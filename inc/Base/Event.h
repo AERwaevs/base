@@ -2,7 +2,7 @@
 
 #include "Base.h"
 
-namespace AEON
+namespace aer
 {
     struct Event : public Object
     {

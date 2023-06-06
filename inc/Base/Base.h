@@ -27,7 +27,7 @@
     template<> constexpr const char* type_name<T>()                 noexcept { return #T; } \
     template<> constexpr const char* type_name<const T>( const T& ) noexcept { return "const "#T; } \
 
-namespace AEON
+namespace aer
 {
     using floats            = std::vector<float>;
     using ints              = std::vector<int>;

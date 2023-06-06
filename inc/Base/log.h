@@ -7,7 +7,7 @@
 //? this should be able to use angled brackets but fails?
 #include "../../lib/loguru/loguru.hpp"
 
-namespace AEON::Log
+namespace aer::Log
 {
     inline void Init( int argc, char** argv )
     {
