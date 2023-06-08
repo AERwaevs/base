@@ -11,6 +11,7 @@
 #include <map>
 #include <atomic>
 #include <set>
+#include <fstream>
 
 #include "platform.h"
 #include "log.h"
