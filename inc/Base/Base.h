@@ -22,6 +22,7 @@
 #include "singleton.h"
 #include "interface.h"
 #include "io/read.h"
+#include "io/write.h"
 
 #define BIT( bit ) 1 << bit
 #define STR( str ) #str
