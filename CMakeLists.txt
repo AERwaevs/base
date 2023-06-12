@@ -24,7 +24,6 @@ set( HEADERS
     ${BASE_SRC}/platform.h
     ${BASE_SRC}/log.h
     ${BASE_SRC}/object.h
-    ${BASE_SRC}/implements.h
     ${BASE_SRC}/ref_ptr.h
     ${BASE_SRC}/spy_ptr.h
     ${BASE_SRC}/singleton.h
