@@ -20,7 +20,7 @@ struct IRead
         file.read( bytes.data(), file_size );
         file.close();
 
-        return ref_ptr<T>( reinterpret_cast<T*>( bytes.data() ) );
+        return T::create( bytes );
     }
 };
 
