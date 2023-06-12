@@ -9,6 +9,7 @@
 #include <chrono>
 #include <typeinfo>
 #include <map>
+#include <concepts>
 #include <atomic>
 #include <set>
 #include <fstream>
@@ -19,6 +20,8 @@
 #include "ref_ptr.h"
 #include "spy_ptr.h"
 #include "singleton.h"
+#include "interface.h"
+#include "io/read.h"
 
 #define BIT( bit ) 1 << bit
 #define STR( str ) #str
@@ -45,22 +48,20 @@ namespace aer
     using List          = std::list< Type >;
     template< typename Type1, typename Type2 >
     using Map           = std::map< Type1, Type2 >;
-    
-    template< typename T, template< typename > typename... _Interfaces >
-    struct Interfaces : public virtual _Interfaces<T>...
-    {
-
-    };
 
     template< typename T > constexpr const char* type_name()           noexcept { return typeid(T).name(); }
     template< typename T > constexpr const char* type_name( const T& ) noexcept { return type_name<T>(); }
 
     template< typename T >
     struct ITypeInfo
-    {
-        constexpr const char*           type_name() noexcept { return typeid(T).name(); }
-        constexpr const std::type_info& type_info() noexcept { return typeid(T);        }
-        constexpr const std::size_t     type_size() noexcept { return sizeof(T);        }
+    {   
+        constexpr const char*           type_name( const T& ) noexcept { return typeid(*this).name(); }
+        constexpr const std::type_info& type_info( const T& ) noexcept { return typeid(*this);        }
+        constexpr const std::size_t     type_size( const T& ) noexcept { return sizeof(*this);        }
+
+        static constexpr const char*           type_name() noexcept { return typeid(T).name(); }
+        static constexpr const std::type_info& type_info() noexcept { return typeid(T);        }
+        static constexpr const std::size_t     type_size() noexcept { return sizeof(T);        }
     };
 
 }

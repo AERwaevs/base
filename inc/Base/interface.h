@@ -1,11 +1,15 @@
 #pragma once
 
-#include <concepts>
+namespace aer
+{
 
-#include "object.h"
-
-template< typename T, template< typename > typename... Interfaces >
-struct Implements : public virtual Interfaces<T>...
+template< typename T, template< typename > typename... interfaces >
+struct Interfaces : public virtual interfaces<T>...
 {
 
 };
+
+template< typename T, template< typename > typename I >
+concept has_interface = std::derived_from< T, I<T> >;
+
+}
