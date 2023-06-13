@@ -12,6 +12,7 @@
 #include <concepts>
 #include <atomic>
 #include <set>
+#include <sstream>
 #include <fstream>
 
 #include "platform.h"
@@ -21,8 +22,8 @@
 #include "spy_ptr.h"
 #include "singleton.h"
 #include "interface.h"
-#include "io/read.h"
-#include "io/write.h"
+#include "io/Read.h"
+#include "io/Write.h"
 
 #define BIT( bit ) 1 << bit
 #define STR( str ) #str

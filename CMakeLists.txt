@@ -51,4 +51,6 @@ target_include_directories( base
 target_compile_features(   base PUBLIC cxx_std_20 )
 target_compile_definitions( base PUBLIC AEON_DEBUG )
 
+target_link_libraries( base PRIVATE pthread )
+
 add_library( aer::base ALIAS base )
