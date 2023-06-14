@@ -5,6 +5,7 @@
 #include <concepts>
 
 #include "platform.h"
+#include "interface.h"
 #include "ref_ptr.h"
 
 template< typename T >
@@ -44,13 +45,9 @@ private:
 protected:
     template< class R >
     friend class ref_ptr;
-    
-private:
-    template< object R >
-    friend struct ICreate;
 
-    template< object R >
-    friend struct ICreateIf;
+    template< class R >
+    friend class Interfaces;
     
 private:
     mutable std::atomic_uint32_t _references;
@@ -65,6 +62,12 @@ struct ICreate
         return ref_ptr<O>( new O( std::forward<Args>( args )... ) );
     }
 };
+
+//template< object D, class B = Object, typename... Args  >
+//static constexpr auto B::create( Args&&... args )
+//{
+//    return ref_ptr<D>( new D( std::forward<Args>( args )... ) );
+//}
 
 template< object O = Object >
 struct ICreateIf

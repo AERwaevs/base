@@ -1,15 +1,17 @@
 #pragma once
 
+#ifdef interface
+#undef interface
+#endif
+#define interface template<typename> typename
+
 namespace aer
 {
 
-template< typename T, template< typename > typename... interfaces >
+template< typename T, interface... interfaces >
 struct Interfaces : public virtual interfaces<T>...
 {
 
 };
-
-template< typename T, template< typename > typename I >
-concept has_interface = std::derived_from< T, I<T> >;
 
 }

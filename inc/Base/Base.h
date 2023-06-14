@@ -22,8 +22,8 @@
 #include "spy_ptr.h"
 #include "singleton.h"
 #include "interface.h"
-#include "io/Read.h"
-#include "io/Write.h"
+#include "io/read.h"
+#include "io/write.h"
 
 #define BIT( bit ) 1 << bit
 #define STR( str ) #str
