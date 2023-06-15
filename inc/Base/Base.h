@@ -14,6 +14,7 @@
 #include <set>
 #include <sstream>
 #include <fstream>
+#include <cxxabi.h>    // for __cxa_demangle
 
 #include "platform.h"
 #include "log.h"
@@ -51,17 +52,19 @@ namespace aer
     template< typename Type1, typename Type2 >
     using Map           = std::map< Type1, Type2 >;
 
-    template< typename T > constexpr const char* type_name()           noexcept { return typeid(T).name(); }
+    template< typename T > constexpr const char* type_name() noexcept
+    {
+        int    status( -1 );
+        auto   name = typeid(T).name();
+        auto   demangled = abi::__cxa_demangle( name, 0, 0, &status );
+        return status == 0 ? demangled : name;
+    }
     template< typename T > constexpr const char* type_name( const T& ) noexcept { return type_name<T>(); }
 
     template< typename T >
     struct ITypeInfo
     {   
-        constexpr const char*           type_name( const T& ) noexcept { return typeid(*this).name(); }
-        constexpr const std::type_info& type_info( const T& ) noexcept { return typeid(*this);        }
-        constexpr const std::size_t     type_size( const T& ) noexcept { return sizeof(*this);        }
-
-        static constexpr const char*           type_name() noexcept { return typeid(T).name(); }
+        static constexpr const char*           type_name() noexcept { return aer::type_name<T>(); }
         static constexpr const std::type_info& type_info() noexcept { return typeid(T);        }
         static constexpr const std::size_t     type_size() noexcept { return sizeof(T);        }
     };
