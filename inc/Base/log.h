@@ -1,33 +1,6 @@
 #pragma once
 
-#include <string>
-
-#define LOGURU_EXPORT
-//#include <loguru/loguru.hpp>
-//? this should be able to use angled brackets but fails?
 #include "../../lib/loguru/loguru.hpp"
-
-namespace aer::Log
-{
-    inline void Init( int argc, char** argv )
-    {
-        using namespace loguru;
-
-        g_preamble_header       = false;
-        g_stderr_verbosity      = Verbosity_INFO;
-        g_internal_verbosity    = Verbosity_MAX;
-        g_flush_interval_ms     = 100;
-        init( argc, argv );
-    }
-
-    inline void New(    const std::string&  log_name    = "AEON", 
-                        loguru::FileMode    mode        = loguru::Truncate, 
-                        loguru::Verbosity   verbosity   = loguru::Verbosity_INFO )
-    {
-        std::string file_name = log_name + ".log";
-        loguru::add_file( file_name.c_str(), mode, verbosity ); 
-    }
-}
 
 #define AE_INFO(                    ... )   LOG_F(    INFO,                 __VA_ARGS__ )
 #define AE_WARN(                    ... )   LOG_F(    WARNING,              __VA_ARGS__ )
