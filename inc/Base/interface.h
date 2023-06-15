@@ -1,14 +1,9 @@
 #pragma once
 
-#ifdef interface
-#undef interface
-#endif
-#define interface template<typename> typename
-
 namespace aer
 {
 
-template< typename T, interface... interfaces >
+template< typename T, template<typename> typename... interfaces >
 struct Interfaces : public virtual interfaces<T>...
 {
 
