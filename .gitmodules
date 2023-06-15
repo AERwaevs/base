@@ -1,3 +1,4 @@
 [submodule "lib/loguru"]
 	path = lib/loguru
-	url = https://github.com/emilk/loguru
+	url = https://github.com/AERwaevs/loguru
+	branch = aer
