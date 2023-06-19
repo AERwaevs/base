@@ -28,6 +28,8 @@
 #       error "AEON does not support 32 bit!"
 #   endif
 #else
+#   include <cxxabi.h>    // for __cxa_demangle
+#   define CXX_DEMANGLE 1
 #   define         AEON_DLL
 #   define         AEON_API
 #   ifdef __APPLE__
