@@ -11,21 +11,14 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 </editor-fold> */
+#include <concepts>
 
-//template< typename T >
-//concept has_reference_methods = requires( T t )
-//{
-//    t._ref();
-//    t._unref();
-//};
-//
-//template< typename T >
-//struct is_referenced { constexpr static bool value = has_reference_methods<T>; };
-//
-//template< typename T >
-//concept Referenced = is_referenced<T>::value;
+#include "object.h"
 
-template< class T >
+namespace aer
+{
+
+template< typename T >
 class ref_ptr
 {
 public:
@@ -97,18 +90,6 @@ public:
     }
 
     template< class R >
-    ref_ptr& operator |= ( ref_ptr<R>&& rhs )
-    { 
-        if( valid() ) return *this;
-        else if( rhs.valid() )
-        {
-            ptr     = rhs.ptr;
-            rhs.ptr = nullptr;
-        }
-        return *this;
-    }
-
-    template< class R >
     bool operator <  ( const ref_ptr<R>& rhs ) const { return ( ptr <  rhs.ptr ); }
 
     template< class R >
@@ -134,13 +115,15 @@ public:
 
     bool valid()                      const noexcept { return ( ptr != nullptr ); }
 
-    explicit operator bool()          const noexcept { return valid(); }
+    explicit operator bool  ()        const noexcept { return valid(); }
 
-    T& operator *()                   const noexcept { return *ptr; }
+    explicit operator T*    ()        const noexcept { return ptr; }
 
     T* operator ->()                  const noexcept { return ptr; }
 
     T* get()                          const noexcept { return ptr; }
+
+    T& operator *()                   const noexcept { return *ptr; }
 
     void operator []( int )           const = delete;
 
@@ -161,3 +144,5 @@ protected:
 protected:
     T* ptr = nullptr;
 };
+
+} // namespace aer

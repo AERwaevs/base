@@ -11,8 +11,14 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 </editor-fold> */
+#include <concepts>
 
-template< class T >
+#include "object.h"
+
+namespace aer
+{
+
+template< typename T >
 class spy_ptr
 {
 public:
@@ -20,7 +26,7 @@ public:
 
     spy_ptr()                                 : ptr( nullptr )   {}
     spy_ptr( const spy_ptr& rhs )             : ptr( rhs.ptr )   {}
-    ~spy_ptr()                                                        {}
+    ~spy_ptr()                                                   {}
 
     template< class R >
     explicit spy_ptr( R* rhs )                : ptr( rhs )       {}
@@ -71,10 +77,11 @@ public:
 
     explicit operator bool() const noexcept { return valid(); }
 
-    template< class R >
-    operator ref_ptr<R>() const { return valid() ? ref_ptr<R>( ptr ) : ref_ptr<R>(); }
+    template< class R = T > requires std::derived_from< R, Object >
+    explicit operator ref_ptr<R>() const noexcept { return valid() ? ref_ptr<R>( ptr ) : ref_ptr<R>(); }
 
-    ref_ptr<T> load() const { return ref_ptr<T>(*this); }
+    template< class R = T > requires std::derived_from< R, Object >
+    ref_ptr<R> load() const { return ref_ptr<R>( ptr ); }
 
 protected:
     template< class R >
@@ -82,3 +89,5 @@ protected:
 
     T* ptr;
 };
+
+} // namespace aer
