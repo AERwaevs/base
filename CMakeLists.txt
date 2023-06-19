@@ -21,12 +21,20 @@ set( STD_HEADERS
 
 set( HEADERS
     ${BASE_SRC}/Base.h
-    ${BASE_SRC}/platform.h
+    ${BASE_SRC}/Event.h
+    ${BASE_SRC}/EventListener.h
+    ${BASE_SRC}/interface.h
     ${BASE_SRC}/log.h
     ${BASE_SRC}/object.h
+    ${BASE_SRC}/platform.h
     ${BASE_SRC}/ref_ptr.h
     ${BASE_SRC}/spy_ptr.h
-    ${BASE_SRC}/singleton.h
+    ${BASE_SRC}/io/read.h
+    ${BASE_SRC}/io/write.h
+    ${BASE_SRC}/io/ReaderWriter.h
+    ${BASE_SRC}/interfaces/create.h
+    ${BASE_SRC}/interfaces/singleton.h
+    ${BASE_SRC}/interfaces/type_info.h
 )
 
 set( LOGURU_SRC 
@@ -51,6 +59,6 @@ target_include_directories( base
 target_compile_features(   base PUBLIC cxx_std_20 )
 target_compile_definitions( base PUBLIC AEON_DEBUG )
 
-target_link_libraries( base PRIVATE pthread )
+#target_link_libraries( base PRIVATE pthread )
 
 add_library( aer::base ALIAS base )
