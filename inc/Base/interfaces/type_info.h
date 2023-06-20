@@ -14,6 +14,11 @@ template< typename T > constexpr const char* type_name() noexcept
     return typeid(T).name();
 #endif
 }
+
+#define AER_TYPE_NAME( T )                                                                  \
+template<> constexpr const char* type_name<T>()         noexcept { return #T; }             \
+template<> constexpr const char* type_name<const T>()   noexcept { return "const "#T; }
+
 template< typename T > constexpr const char* type_name( const T& ) noexcept { return type_name<T>(); }
 
 template< typename T >
@@ -23,6 +28,5 @@ struct ITypeInfo
     static constexpr const std::type_info& type_info() noexcept { return typeid(T);           }
     static constexpr const std::size_t     type_size() noexcept { return sizeof(T);           }
 };
-
 
 }
