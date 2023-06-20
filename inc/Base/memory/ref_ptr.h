@@ -117,7 +117,7 @@ public:
 
     explicit operator bool  ()        const noexcept { return valid(); }
 
-    explicit operator T*    ()        const noexcept { return ptr; }
+             operator T*    ()        const noexcept { return ptr; }
 
     T* operator ->()                  const noexcept { return ptr; }
 
