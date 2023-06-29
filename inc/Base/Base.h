@@ -27,9 +27,6 @@
 #include "io/read.h"
 #include "io/write.h"
 
-#define BIT( bit ) 1 << bit
-#define STR( str ) #str
-
 #define AEON_TYPE_NAME( T ) \
     template<> constexpr const char* type_name<T>()                 noexcept { return #T; } \
     template<> constexpr const char* type_name<const T>( const T& ) noexcept { return "const "#T; } \
