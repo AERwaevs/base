@@ -15,11 +15,12 @@ template< typename T > constexpr const char* type_name() noexcept
 #endif
 }
 
-#define AER_TYPE_NAME( T )                                                                  \
-template<> constexpr const char* type_name<T>()         noexcept { return #T; }             \
-template<> constexpr const char* type_name<const T>()   noexcept { return "const "#T; }
+#define AER_TYPE_NAME( T )                                                                              \
+template<> constexpr const char*             type_name<T>()         noexcept { return #T; }             \
+template<> constexpr const char*             type_name<const T>()   noexcept { return "const "#T; }
 
-template< typename T > constexpr const char* type_name( const T& ) noexcept { return type_name<T>(); }
+template< typename T > constexpr const char* type_name( T& )        noexcept { return type_name<T>(); }
+template< typename T > constexpr const char* type_name( const T& )  noexcept { return type_name<const T>(); }     
 
 template< typename T >
 struct ITypeInfo
