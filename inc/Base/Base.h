@@ -27,10 +27,6 @@
 #include "io/read.h"
 #include "io/write.h"
 
-#define AEON_TYPE_NAME( T ) \
-    template<> constexpr const char* type_name<T>()                 noexcept { return #T; } \
-    template<> constexpr const char* type_name<const T>( const T& ) noexcept { return "const "#T; } \
-
 namespace aer
 {
     using floats            = std::vector<float>;
