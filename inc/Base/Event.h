@@ -24,5 +24,5 @@ namespace aer
         bool      _handled = false;
     };
 
-    using Events = List<ref_ptr<Event>>;
+    using Events = std::list<ref_ptr<Event>>;
 }
