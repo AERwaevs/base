@@ -25,16 +25,17 @@ set( HEADERS
     ${BASE_SRC}/EventListener.h
     ${BASE_SRC}/interface.h
     ${BASE_SRC}/log.h
-    ${BASE_SRC}/object.h
     ${BASE_SRC}/platform.h
-    ${BASE_SRC}/ref_ptr.h
-    ${BASE_SRC}/spy_ptr.h
-    ${BASE_SRC}/io/read.h
-    ${BASE_SRC}/io/write.h
-    ${BASE_SRC}/io/ReaderWriter.h
     ${BASE_SRC}/interfaces/create.h
     ${BASE_SRC}/interfaces/singleton.h
     ${BASE_SRC}/interfaces/type_info.h
+    ${BASE_SRC}/memory/object.h
+    ${BASE_SRC}/memory/scratch_memory.h
+    ${BASE_SRC}/memory/ref_ptr.h
+    ${BASE_SRC}/memory/spy_ptr.h
+    ${BASE_SRC}/io/read.h
+    ${BASE_SRC}/io/write.h
+    ${BASE_SRC}/io/ReaderWriter.h
 )
 
 set( LOGURU_SRC 
@@ -43,11 +44,8 @@ set( LOGURU_SRC
 )
 
 add_library( base STATIC ${HEADERS} ${LOGURU_SRC} )
-set_target_properties( base
-    PROPERTIES 
-    CXX_STANDARD    20
-    LINKER_LANGUAGE CXX
-)
+target_precompile_headers(  base PUBLIC ${STD_HEADERS} )
+target_compile_features(    base PUBLIC cxx_std_20 )
 target_include_directories( base 
     PUBLIC
         $<BUILD_INTERFACE:${BASE_INC}>
@@ -55,10 +53,6 @@ target_include_directories( base
     PRIVATE
         $<BUILD_INTERFACE:${BASE_LIB}>
 )
-#target_precompile_headers( base PUBLIC ${STD_HEADERS} )
-target_compile_features(   base PUBLIC cxx_std_20 )
-target_compile_definitions( base PUBLIC AEON_DEBUG )
 
-#target_link_libraries( base PRIVATE pthread )
 
 add_library( aer::base ALIAS base )
