@@ -89,43 +89,24 @@ public:
         return *this;
     }
 
-    template< class R >
-    bool operator <  ( const ref_ptr<R>& rhs ) const { return ( ptr <  rhs.ptr ); }
-
-    template< class R >
-    bool operator >  ( const ref_ptr<R>& rhs ) const { return ( ptr >  rhs.ptr ); }
-
-    template< class R >
-    bool operator == ( const ref_ptr<R>& rhs ) const { return ( ptr == rhs.ptr ); }
-
-    template< class R >
-    bool operator != ( const ref_ptr<R>& rhs ) const { return ( ptr != rhs.ptr ); }
-
-    template< class R >
-    bool operator <  ( const R* rhs )          const { return ( ptr <  rhs ); }
-
-    template< class R >
-    bool operator >  ( const R* rhs )          const { return ( ptr >  rhs ); }
-
-    template< class R >
-    bool operator == ( const R* rhs )          const { return ( ptr == rhs ); }
-
-    template< class R >
-    bool operator != ( const R* rhs )          const { return ( ptr != rhs ); }
-
     bool valid()                      const noexcept { return ( ptr != nullptr ); }
 
     explicit operator bool  ()        const noexcept { return valid(); }
 
              operator T*    ()        const noexcept { return ptr; }
 
-    T* operator ->()                  const noexcept { return ptr; }
-
     T* get()                          const noexcept { return ptr; }
+    
+    T* operator ->()                  const noexcept { return ptr; }
 
     T& operator *()                   const noexcept { return *ptr; }
 
-    void operator []( int )           const = delete;
+    void operator []( int )              const = delete;
+
+    auto operator <=> ( const ref_ptr& ) const = default;
+
+    template< class R >
+    auto operator <=> ( const R* rhs )   const { return ( ptr <=> rhs ); };
 
     void swap( ref_ptr& rhs ) noexcept
     {

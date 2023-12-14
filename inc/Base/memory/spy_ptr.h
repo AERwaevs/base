@@ -37,41 +37,10 @@ public:
     template< class R >
     explicit spy_ptr( const ref_ptr<R>& rhs ) : ptr( rhs.get() ) {}
 
+    auto operator <=> ( const spy_ptr& ) const = default;
 
     template< class R >
-    spy_ptr& operator = ( R* rhs)                 { ptr = rhs;       return *this; }
-
-    spy_ptr& operator = ( const spy_ptr& rhs )    { ptr = rhs.ptr;   return *this; }
-
-    template< class R >
-    spy_ptr& operator = ( const spy_ptr<R>& rhs ) { ptr = rhs.ptr;   return *this; }
-
-    template< class R >
-    spy_ptr& operator = ( const ref_ptr<R>& rhs ) { ptr = rhs.get(); return *this; }
-
-    template< class R >
-    bool operator <  ( const spy_ptr<R>& rhs ) const { return ( ptr <  rhs.ptr ); }
- 
-    template< class R > 
-    bool operator >  ( const spy_ptr<R>& rhs ) const { return ( ptr >  rhs.ptr ); }
- 
-    template< class R > 
-    bool operator == ( const spy_ptr<R>& rhs ) const { return ( ptr == rhs.ptr ); }
- 
-    template< class R > 
-    bool operator != ( const spy_ptr<R>& rhs ) const { return ( ptr != rhs.ptr ); }
-
-    template< class R >
-    bool operator <  ( const R* rhs )          const { return ( ptr <  rhs ); }
-
-    template< class R >
-    bool operator >  ( const R* rhs )          const { return ( ptr >  rhs ); }
-
-    template< class R >
-    bool operator == ( const R* rhs )          const { return ( ptr == rhs ); }
-
-    template< class R >
-    bool operator != ( const R* rhs )          const { return ( ptr != rhs ); }
+    auto operator <=> ( const R* rhs )   const { return ( ptr <=> rhs ); };
 
     bool valid()             const noexcept { return ptr != nullptr; }
 
@@ -87,7 +56,7 @@ protected:
     template< class R >
     friend class spy_ptr;
 
-    T* ptr;
+    T* ptr = nullptr;
 };
 
 } // namespace aer
