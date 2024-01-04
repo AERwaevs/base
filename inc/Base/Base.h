@@ -17,9 +17,9 @@
 
 #include "platform.h"
 #include "log.h"
-#include "object.h"
-#include "ref_ptr.h"
-#include "spy_ptr.h"
+#include "memory/object.h"
+#include "memory/ref_ptr.h"
+#include "memory/spy_ptr.h"
 #include "interface.h"
 #include "interfaces/create.h"
 #include "interfaces/type_info.h"
