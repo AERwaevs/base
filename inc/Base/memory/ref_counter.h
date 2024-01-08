@@ -24,7 +24,7 @@ namespace aer::mem
 struct ref_counter
 {
              ref_counter()                   noexcept : _count( 1u ) {}
-    explicit ref_counter( uint32_t desired ) noexcept : _count( desired == 0 ? ZERO_FLAG : desired ) {}
+    explicit ref_counter( uint32_t desired ) noexcept : _count( desired ) {}
 
     // Increment if the counter is not zero.
     //
