@@ -30,7 +30,7 @@ struct ref_counter
     //
     // Returns true if the increment was successful, i.e., the counter
     // was not stuck at zero. Returns false if the counter was zero
-    bool increment( std::memory_order order = std::memory_order_seq_cst ) noexcept
+    bool increment( std::memory_order order = std::memory_order_seq_cst ) const noexcept
     {
         return ( _count.fetch_add( 1u, order ) & ZERO_FLAG ) == 0;
     }
@@ -39,12 +39,12 @@ struct ref_counter
     //
     // Returns true if the counter was decremented to zero
     // Returns false if the counter was not decremented to zero
-    bool decrement( std::memory_order order = std::memory_order_seq_cst ) noexcept
+    bool decrement( std::memory_order order = std::memory_order_seq_cst ) const noexcept
     {
         if( _count.fetch_sub( 1u, order ) == 1u )
         {
             uint32_t expected = 0;
-            if( _count.compare_exchange_strong( expected, ZERO_FLAG ) ) [[likely]] return true;
+            if( _count.compare_exchange_strong( expected, ZERO_FLAG ) ) return true;
             else if( ( expected & ZERO_PENDING_FLAG ) && ( _count.exchange( ZERO_FLAG ) & ZERO_PENDING_FLAG ) ) return true;
         }
         return false;
@@ -55,12 +55,12 @@ struct ref_counter
     uint32_t load( std::memory_order order = std::memory_order_seq_cst ) const noexcept
     {
         auto val = _count.load( order );
-        if( val == 0 && _count.compare_exchange_strong( val, ZERO_FLAG | ZERO_PENDING_FLAG ) ) [[unlikely]] return 0;
+        if( val == 0 && _count.compare_exchange_strong( val, ZERO_FLAG | ZERO_PENDING_FLAG ) ) return 0;
         return ( val & ZERO_FLAG ) ? 0 : val;
     }
 
 private:
-    static constexpr enum : uint32_t
+    enum : uint32_t
     {
         ZERO_FLAG           = ( 1u << ( sizeof(uint32_t) * 8u - 1u ) ),
         ZERO_PENDING_FLAG   = ( 1u << ( sizeof(uint32_t) * 8u - 2u ) )
