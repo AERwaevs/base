@@ -31,7 +31,8 @@ set( HEADERS
     ${BASE_SRC}/interfaces/type_info.h
     ${BASE_SRC}/memory/object.h
     ${BASE_SRC}/memory/scratch_memory.h
-    ${BASE_SRC}/memory/ref_ptr.h
+    ${BASE_SRC}/memory/ptr_base.h
+    ${BASE_SRC}/memory/ptr_ref.h
     ${BASE_SRC}/memory/spy_ptr.h
     ${BASE_SRC}/io/read.h
     ${BASE_SRC}/io/write.h
