@@ -1,6 +1,6 @@
 #pragma once
 
-#include <atomic>
+#include "ref_counter.h"
 
 namespace aer
 {
@@ -24,12 +24,12 @@ protected:
 
     inline void _ref( std::memory_order order = std::memory_order_relaxed ) const noexcept
     { 
-        _references.fetch_add( 1, order );
+        _references.increment();
     }
 
     inline void _unref( std::memory_order order = std::memory_order_seq_cst ) const noexcept 
     { 
-        if( _references.fetch_sub( 1, order ) <= 1 ) delete this;
+        if( _references.decrement() ) delete this;
     }
 
 protected:
@@ -37,7 +37,7 @@ protected:
     friend class ref_ptr;
     
 private:
-    mutable std::atomic_uint32_t _references;
+    mem::ref_counter _references;
 };
 
 }
