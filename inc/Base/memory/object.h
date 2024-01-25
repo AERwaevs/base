@@ -1,12 +1,12 @@
 #pragma once
 
+#include "allocator.h"
 #include "ref_counter.h"
+#include "base_ptr.h"
 
 namespace aer
 {
 
-template< typename T >
-class ref_ptr;
 
 class Object
 {
@@ -16,6 +16,16 @@ public:
         return _references.load(); 
     }
     
+    static void* operator new( size_t size )
+    {
+        return mem::alloc( size );
+    }
+
+    static void operator delete( void* ptr )
+    {
+        mem::dealloc( ptr );
+    }
+
 protected:
     explicit Object() noexcept : _references( 0 ) {}
     virtual ~Object()                = default;
@@ -33,11 +43,12 @@ protected:
     }
 
 protected:
-    template< typename T >
-    friend class ref_ptr;
+    template< typename Ptr >
+    requires std::is_pointer_v<Ptr>
+    friend struct base_ptr;
     
 private:
-    mem::ref_counter _references;
+    mem::ref_counter< uint32_t > _references;
 };
 
 }
