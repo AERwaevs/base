@@ -20,11 +20,14 @@ namespace aer::mem
 //
 // Note: The counter steals the top two bits of the integer for book-
 // keeping purposes. Hence the maximum representable value in the
-// counter is 2^(8*sizeof(uint32_t)-2) - 1
+// counter is 2^(8*sizeof(T)-2) - 1
+
+template< typename T = uint32_t >
+requires std::unsigned_integral<T> && ( !std::same_as<T, bool> )
 struct ref_counter
 {
-             ref_counter()                   noexcept : _count( 1u ) {}
-    explicit ref_counter( uint32_t desired ) noexcept : _count( desired ) {}
+             ref_counter()            noexcept : _count( 1u ) {}
+    explicit ref_counter( T desired ) noexcept : _count( desired ) {}
 
     // Increment if the counter is not zero.
     //
@@ -43,7 +46,7 @@ struct ref_counter
     {
         if( _count.fetch_sub( 1u, order ) == 1u )
         {
-            uint32_t expected = 0;
+            T expected = 0;
             if( _count.compare_exchange_strong( expected, ZERO_FLAG ) ) return true;
             else if( ( expected & ZERO_PENDING_FLAG ) && ( _count.exchange( ZERO_FLAG ) & ZERO_PENDING_FLAG ) ) return true;
         }
@@ -52,21 +55,25 @@ struct ref_counter
 
     // Loads the current value of the counter.
     // If the current value is zero, it is guaranteed to remain zero
-    uint32_t load( std::memory_order order = std::memory_order_seq_cst ) const noexcept
+    T load( std::memory_order order = std::memory_order_seq_cst ) const noexcept
     {
         auto val = _count.load( order );
         if( val == 0 && _count.compare_exchange_strong( val, ZERO_FLAG | ZERO_PENDING_FLAG ) ) return 0;
         return ( val & ZERO_FLAG ) ? 0 : val;
     }
 
+    explicit operator T()   const noexcept { return load(); }
+        bool operator ++ () const noexcept { return increment(); }
+        bool operator -- () const noexcept { return decrement(); }
+
 private:
-    enum : uint32_t
+    enum : T
     {
-        ZERO_FLAG           = ( 1u << ( sizeof(uint32_t) * 8u - 1u ) ),
-        ZERO_PENDING_FLAG   = ( 1u << ( sizeof(uint32_t) * 8u - 2u ) )
+        ZERO_FLAG           = ( 1u << ( sizeof(T) * 8u - 1u ) ),
+        ZERO_PENDING_FLAG   = ( 1u << ( sizeof(T) * 8u - 2u ) )
     };
 
-    mutable std::atomic_uint32_t _count;
+    mutable std::atomic<T> _count;
 };
 
 } // namespace aer::mem
