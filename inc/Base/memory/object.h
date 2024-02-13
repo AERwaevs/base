@@ -1,8 +1,7 @@
 #pragma once
 
-#include "allocator.h"
+#include "Allocator.h"
 #include "ref_counter.h"
-#include "base_ptr.h"
 
 namespace aer
 {
@@ -43,9 +42,8 @@ protected:
     }
 
 protected:
-    template< typename Ptr >
-    requires std::is_pointer_v<Ptr>
-    friend struct base_ptr;
+    template< typename T >
+    friend class ref_ptr;
     
 private:
     mem::ref_counter< uint32_t > _references;
