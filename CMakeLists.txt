@@ -33,8 +33,8 @@ set( HEADERS
     ${BASE_SRC}/memory/scratch_memory.h
     ${BASE_SRC}/memory/ref_ptr.h
     ${BASE_SRC}/memory/spy_ptr.h
-    ${BASE_SRC}/io/read.h
-    ${BASE_SRC}/io/write.h
+    ${BASE_SRC}/io/Read.h
+    ${BASE_SRC}/io/Write.h
     ${BASE_SRC}/io/ReaderWriter.h
 )
 
