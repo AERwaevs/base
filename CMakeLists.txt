@@ -33,7 +33,7 @@ set( HEADERS
     ${BASE_INC}/Base/interfaces/create.h
     ${BASE_INC}/Base/interfaces/singleton.h
     ${BASE_INC}/Base/interfaces/type_info.h
-    ${BASE_INC}/Base/memory/allocator.h
+    ${BASE_INC}/Base/memory/Allocator.h
     ${BASE_INC}/Base/memory/object.h
     ${BASE_INC}/Base/memory/scratch_memory.h
     ${BASE_INC}/Base/memory/base_ptr.h
