@@ -5,10 +5,11 @@
 namespace aer::mem
 {
 
+class Allocator;
 // controls a collection of MemoryBlock instances
 struct MemoryBlocks
 {
-    friend class Allocator;
+    friend Allocator;
 
     MemoryBlocks( Allocator* in_parent, size_t in_blockSize = MemoryBlock::DEFAULT_BLOCK_SIZE );
     ~MemoryBlocks();
