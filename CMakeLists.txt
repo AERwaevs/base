@@ -1,5 +1,9 @@
 # cmake -------------------------------------------------------------------------------------------
 cmake_minimum_required( VERSION 3.20 )
+project( aer::base
+    VERSION 0.1.0
+    LANGUAGES CXX
+)
 # AEON::Base --------------------------------------------------------------------------------------
 set( BASE_LIB ${CMAKE_CURRENT_SOURCE_DIR}/lib )
 set( BASE_INC ${CMAKE_CURRENT_SOURCE_DIR}/inc )
