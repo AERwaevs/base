@@ -5,6 +5,8 @@ set( BASE_LIB ${CMAKE_CURRENT_SOURCE_DIR}/lib )
 set( BASE_INC ${CMAKE_CURRENT_SOURCE_DIR}/inc )
 set( BASE_SRC ${BASE_INC}/Base )
 
+set( CMAKE_POSITION_INDEPENDENT_CODE ON )
+
 set( STD_HEADERS
     <iostream>
     <functional>
