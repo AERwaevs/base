@@ -14,31 +14,25 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <concepts>
 
 #include "object.h"
+#include "ptr_base.h"
 
 namespace aer
 {
 
 template< typename T >
-class ref_ptr
+struct ref_ptr : ptr_t< T >
 {
-public:
-    using type = T;
+                ref_ptr()                       noexcept : ptr_t() {}    
+                ref_ptr( const ref_ptr& rhs )   noexcept : ptr_t( rhs ) { if( ptr ) ptr->_ref(); }
+    explicit    ref_ptr( T* rhs )               noexcept : ptr_t( rhs ) { if( ptr ) ptr->_ref(); }
+                ~ref_ptr()                      noexcept                { if( ptr ) ptr->_unref(); }
 
-    ref_ptr()                        noexcept : ptr( nullptr ) {}
-    ~ref_ptr()                       noexcept                  { if( ptr ) ptr->_unref(); }
-    
-    ref_ptr( const ref_ptr& rhs )    noexcept : ptr( rhs.ptr ) { if( ptr ) ptr->_ref(); }
-
-    template< class R >
-    ref_ptr( ref_ptr<R>&& rhs )      noexcept : ptr( rhs.ptr ) { rhs.ptr = nullptr; }
-
-    template< class R >
-    ref_ptr( const ref_ptr<R>& rhs ) noexcept : ptr( rhs.ptr ) { if( ptr ) ptr->_ref(); }
-
-    explicit ref_ptr( T* rhs )       noexcept : ptr( rhs )     { if( ptr ) ptr->_ref(); }
-
-    template< class R >
-    explicit ref_ptr( R* rhs )       noexcept : ptr( rhs )     { if( ptr ) ptr->_ref(); }
+    template< class R > requires std::derived_from< R, T >
+                ref_ptr( ref_ptr<R>&& rhs )      noexcept : ptr_t( rhs ) { rhs.ptr = nullptr; }
+    template< class R > requires std::derived_from< R, T >
+                ref_ptr( const ref_ptr<R>& rhs ) noexcept : ptr_t( rhs ) { if( ptr ) ptr->_ref(); }
+    template< class R > requires std::derived_from< R, T >
+    explicit    ref_ptr( R* rhs )                noexcept : ptr_t( rhs ) { if( ptr ) ptr->_ref(); }
 
     ref_ptr& operator = ( T* rhs )
     {
@@ -87,51 +81,6 @@ public:
                 rhs.ptr = nullptr;
         }
         return *this;
-    }
-
-    template< class R >
-    bool operator <  ( const ref_ptr<R>& rhs ) const { return ( ptr <  rhs.ptr ); }
-
-    template< class R >
-    bool operator >  ( const ref_ptr<R>& rhs ) const { return ( ptr >  rhs.ptr ); }
-
-    template< class R >
-    bool operator == ( const ref_ptr<R>& rhs ) const { return ( ptr == rhs.ptr ); }
-
-    template< class R >
-    bool operator != ( const ref_ptr<R>& rhs ) const { return ( ptr != rhs.ptr ); }
-
-    template< class R >
-    bool operator <  ( const R* rhs )          const { return ( ptr <  rhs ); }
-
-    template< class R >
-    bool operator >  ( const R* rhs )          const { return ( ptr >  rhs ); }
-
-    template< class R >
-    bool operator == ( const R* rhs )          const { return ( ptr == rhs ); }
-
-    template< class R >
-    bool operator != ( const R* rhs )          const { return ( ptr != rhs ); }
-
-    bool valid()                      const noexcept { return ( ptr != nullptr ); }
-
-    explicit operator bool  ()        const noexcept { return valid(); }
-
-             operator T*    ()        const noexcept { return ptr; }
-
-    T* operator ->()                  const noexcept { return ptr; }
-
-    T* get()                          const noexcept { return ptr; }
-
-    T& operator *()                   const noexcept { return *ptr; }
-
-    void operator []( int )           const = delete;
-
-    void swap( ref_ptr& rhs ) noexcept
-    {
-        T*  tmp_ptr = ptr;
-            ptr     = rhs.ptr;
-            rhs.ptr = tmp_ptr;
     }
 
     template< class R >

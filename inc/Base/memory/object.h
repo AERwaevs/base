@@ -1,12 +1,12 @@
 #pragma once
 
-#include <atomic>
+#include "allocator.h"
+#include "ref_counter.h"
+#include "base_ptr.h"
 
 namespace aer
 {
 
-template< typename T >
-class ref_ptr;
 
 class Object
 {
@@ -16,6 +16,16 @@ public:
         return _references.load(); 
     }
     
+    static void* operator new( size_t size )
+    {
+        return mem::alloc( size );
+    }
+
+    static void operator delete( void* ptr )
+    {
+        mem::dealloc( ptr );
+    }
+
 protected:
     explicit Object() noexcept : _references( 0 ) {}
     virtual ~Object()                = default;
@@ -24,20 +34,21 @@ protected:
 
     inline void _ref( std::memory_order order = std::memory_order_relaxed ) const noexcept
     { 
-        _references.fetch_add( 1, order );
+        _references.increment();
     }
 
     inline void _unref( std::memory_order order = std::memory_order_seq_cst ) const noexcept 
     { 
-        if( _references.fetch_sub( 1, order ) <= 1 ) delete this;
+        if( _references.decrement() ) delete this;
     }
 
 protected:
-    template< typename T >
-    friend class ref_ptr;
+    template< typename Ptr >
+    requires std::is_pointer_v<Ptr>
+    friend struct base_ptr;
     
 private:
-    mutable std::atomic_uint32_t _references;
+    mem::ref_counter< uint32_t > _references;
 };
 
 }
