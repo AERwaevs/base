@@ -14,34 +14,37 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <concepts>
 
 #include "object.h"
-#include "ptr_base.h"
+#include "base_ptr.h"
 
 namespace aer
 {
 
 template< typename T >
-struct ref_ptr : ptr_t< T >
+struct ref_ptr : public mem::base_ptr< std::add_pointer_t<T> >
 {
-                ref_ptr()                       noexcept : ptr_t() {}    
-                ref_ptr( const ref_ptr& rhs )   noexcept : ptr_t( rhs ) { if( ptr ) ptr->_ref(); }
-    explicit    ref_ptr( T* rhs )               noexcept : ptr_t( rhs ) { if( ptr ) ptr->_ref(); }
-                ~ref_ptr()                      noexcept                { if( ptr ) ptr->_unref(); }
+    using Base = mem::base_ptr<std::add_pointer_t<T>>;
+    using Base::ptr;
 
-    template< class R > requires std::derived_from< R, T >
-                ref_ptr( ref_ptr<R>&& rhs )      noexcept : ptr_t( rhs ) { rhs.ptr = nullptr; }
-    template< class R > requires std::derived_from< R, T >
-                ref_ptr( const ref_ptr<R>& rhs ) noexcept : ptr_t( rhs ) { if( ptr ) ptr->_ref(); }
-    template< class R > requires std::derived_from< R, T >
-    explicit    ref_ptr( R* rhs )                noexcept : ptr_t( rhs ) { if( ptr ) ptr->_ref(); }
+                ref_ptr()                       noexcept : Base() {}    
+                ref_ptr( const ref_ptr& rhs )   noexcept : Base( rhs ) { if( ptr ) ptr->_ref(); }
+    explicit    ref_ptr( T* rhs )               noexcept : Base( rhs ) { if( ptr ) ptr->_ref(); }
+                ~ref_ptr()                      noexcept               { if( ptr ) ptr->_unref(); }
+
+    template< class R >
+                ref_ptr( ref_ptr<R>&& rhs )      noexcept : Base( rhs ) { rhs.ptr = nullptr; }
+    template< class R >
+                ref_ptr( const ref_ptr<R>& rhs ) noexcept : Base( rhs ) { if( ptr ) ptr->_ref(); }
+    template< class R >
+    explicit    ref_ptr( R* rhs )                noexcept : Base( rhs ) { if( ptr ) ptr->_ref(); }
 
     ref_ptr& operator = ( T* rhs )
     {
         if( ptr != rhs )
         {
-            T*  tmp_ptr = ptr;
-                ptr     = rhs;
-            if( ptr )     ptr->_ref();
-            if( tmp_ptr ) tmp_ptr->_unref();
+            T*  tmp_ptr     = ptr;
+                ptr   = rhs;
+            if( ptr ) ptr->_ref();
+            if( tmp_ptr )   tmp_ptr->_unref();
         }
         return *this;
     }
@@ -82,16 +85,10 @@ struct ref_ptr : ptr_t< T >
         }
         return *this;
     }
-
-    template< class R >
-    ref_ptr<R> cast() const { return ref_ptr<R>( valid() ? ptr->template cast<R>() : nullptr ); }
-
-protected:
-    template< class R >
-    friend class    ref_ptr;
     
 protected:
-    T* ptr = nullptr;
+    template< class R >
+    friend class ref_ptr;
 };
 
 } // namespace aer
