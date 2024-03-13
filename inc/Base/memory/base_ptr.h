@@ -34,7 +34,7 @@ struct base_ptr
     //bool        is_protected()                      const          { return true; }
     bool        valid()                             const noexcept { return ( ptr != nullptr ); }
     //void        clear()                                   noexcept { ptr = nullptr; }
-    friend void swap( base_ptr& other )                            { std::swap( ptr, other.ptr ); }
+    void        swap( base_ptr& other )                            { std::swap( ptr, other.ptr ); }
 
 protected:
     Ptr ptr = nullptr;
