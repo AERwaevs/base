@@ -48,7 +48,6 @@
 #       error "Android is not supported!"
 #   elif __linux__
 #       define     AEON_PLATFORM_LINUX
-#       error "Linux is not supported!"
 #   else
 #       error "Unknown platform!"
 #   endif
