@@ -2,6 +2,8 @@
 #include <Base/memory/MemoryBlocks.h>
 #include <Base/log.h>
 
+#include <mutex>
+
 namespace aer::mem
 {
     

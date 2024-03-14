@@ -1,5 +1,9 @@
 # cmake -------------------------------------------------------------------------------------------
-cmake_minimum_required( VERSION 3.2.0 )
+cmake_minimum_required( VERSION 3.20 )
+project( aer::base
+    VERSION 0.1.0
+    LANGUAGES CXX
+)
 # AEON::Base --------------------------------------------------------------------------------------
 set( BASE_LIB ${CMAKE_CURRENT_SOURCE_DIR}/lib )
 set( BASE_INC ${CMAKE_CURRENT_SOURCE_DIR}/inc )
@@ -29,14 +33,14 @@ set( HEADERS
     ${BASE_INC}/Base/interfaces/create.h
     ${BASE_INC}/Base/interfaces/singleton.h
     ${BASE_INC}/Base/interfaces/type_info.h
-    ${BASE_INC}/Base/memory/allocator.h
+    ${BASE_INC}/Base/memory/Allocator.h
     ${BASE_INC}/Base/memory/object.h
     ${BASE_INC}/Base/memory/scratch_memory.h
     ${BASE_INC}/Base/memory/base_ptr.h
     ${BASE_INC}/Base/memory/ref_ptr.h
     ${BASE_INC}/Base/memory/spy_ptr.h
-    ${BASE_INC}/Base/io/read.h
-    ${BASE_INC}/Base/io/write.h
+    ${BASE_INC}/Base/io/Read.h
+    ${BASE_INC}/Base/io/Write.h
     ${BASE_INC}/Base/io/ReaderWriter.h
 )
 
