@@ -8,7 +8,7 @@ namespace aer::mem
 MemorySlots::MemorySlots( size_t availableMemorySize, MemoryTracking tracking )
     : memoryTracking( tracking ), _totalMemorySize( availableMemorySize )
 {
-    insert( 0, availableMemorySize );
+    insertAvailableSlot( 0, availableMemorySize );
 }
 
 std::optional<offset_t> MemorySlots::reserve( size_t size, size_t alignment )
@@ -31,11 +31,11 @@ std::optional<offset_t> MemorySlots::reserve( size_t size, size_t alignment )
         if( alignedEnd > slotEnd ) { ++itr; continue; }
 
         // remove the slot that will be used
-        remove( slotStart, slotSize );
+        removeAvailableSlot( slotStart, slotSize );
 
         // create slots for either side of the newly reserved memory 
-        if( slotStart < alignedStart ) insert( slotStart, alignedStart - slotStart );
-        if( alignedEnd < slotEnd )     insert( alignedEnd, slotEnd - alignedEnd );
+        if( slotStart < alignedStart ) insertAvailableSlot( slotStart, alignedStart - slotStart );
+        if( alignedEnd < slotEnd )     insertAvailableSlot( alignedEnd, slotEnd - alignedEnd );
 
         // record and return the reserved slot
         _reservedMemory.emplace( alignedStart, size );
@@ -66,7 +66,7 @@ bool MemorySlots::release( offset_t offset, size_t size )
     _reservedMemory.erase( itr );
     if( _offsetSizes.empty() )
     {
-        insert( offset, size );
+        insertAvailableSlot( offset, size );
         return true;
     }
 
@@ -78,7 +78,7 @@ bool MemorySlots::release( offset_t offset, size_t size )
     if( nextItr != _offsetSizes.end() && nextItr->first == slotEnd )
     {
         slotEnd = nextItr->first + nextItr->second;
-        remove( nextItr->first, nextItr->second );
+        removeAvailableSlot( nextItr->first, nextItr->second );
     }
     
     // merge with previous slot if adjacent
@@ -87,11 +87,11 @@ bool MemorySlots::release( offset_t offset, size_t size )
     if( prevSlotEnd == slotStart )
     {
         slotStart = prevItr->first;
-        remove( prevItr->first, prevItr->second );
+        removeAvailableSlot( prevItr->first, prevItr->second );
     }
 
     // insert the merged slot back into the available memory
-    insert( slotStart, slotEnd - slotStart );
+    insertAvailableSlot( slotStart, slotEnd - slotStart );
     return true;
 }
 
@@ -140,13 +140,13 @@ bool MemorySlots::check() const
     return true;
 }
 
-void MemorySlots::insert( offset_t offset, size_t size )
+void MemorySlots::insertAvailableSlot( offset_t offset, size_t size )
 {
     _offsetSizes.emplace( offset, size );
     _availableMemory.emplace( size, offset );
 }
 
-void MemorySlots::remove( offset_t offset, size_t size )
+void MemorySlots::removeAvailableSlot( offset_t offset, size_t size )
 {
     _offsetSizes.erase( offset );
     for( auto itr = _availableMemory.lower_bound( size ); itr != _availableMemory.upper_bound( size ); ++itr )

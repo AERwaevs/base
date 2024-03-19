@@ -53,8 +53,8 @@ struct MemorySlots
         return std::accumulate( _reservedMemory.begin(), _reservedMemory.end(), 0, []( auto sum, auto& slot ) { return sum + slot.second; } );
     }
 protected:
-    void insert( offset_t, size_t );
-    void remove( offset_t, size_t );
+    void insertAvailableSlot( offset_t, size_t );
+    void removeAvailableSlot( offset_t, size_t );
 private:
     std::multimap<size_t, offset_t> _availableMemory;
     std::map<offset_t, size_t>      _reservedMemory;
