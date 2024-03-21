@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Allocator.h"
-#include "ref_counter.h"
+#include "memory/Allocator.h"
+#include "memory/ref_counter.h"
 
 namespace aer
 {

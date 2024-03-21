@@ -45,13 +45,13 @@ set( HEADERS
     ${BASE_INC}/Base/Event.h
     ${BASE_INC}/Base/EventListener.h
     ${BASE_INC}/Base/interface.h
+    ${BASE_INC}/Base/object.h
     ${BASE_INC}/Base/log.h
     ${BASE_INC}/Base/platform.h
     ${BASE_INC}/Base/interfaces/create.h
     ${BASE_INC}/Base/interfaces/singleton.h
     ${BASE_INC}/Base/interfaces/type_info.h
     ${BASE_INC}/Base/memory/Allocator.h
-    ${BASE_INC}/Base/memory/object.h
     ${BASE_INC}/Base/memory/scratch_memory.h
     ${BASE_INC}/Base/memory/base_ptr.h
     ${BASE_INC}/Base/memory/ref_ptr.h

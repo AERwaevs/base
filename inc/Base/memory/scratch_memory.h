@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#include "object.h"
+#include "../object.h"
 #include "ref_ptr.h"
 
 #include "../interfaces/create.h"

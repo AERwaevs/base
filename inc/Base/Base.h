@@ -18,7 +18,7 @@
 
 #include "platform.h"
 #include "log.h"
-#include "memory/object.h"
+#include "object.h"
 #include "memory/base_ptr.h"
 #include "memory/ref_ptr.h"
 #include "memory/spy_ptr.h"
