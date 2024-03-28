@@ -17,7 +17,7 @@ Allocator::Allocator()
 
 std::unique_ptr<Allocator>& Allocator::instance() noexcept
 {
-    static std::unique_ptr<Allocator> allocator( new Allocator() ); 
+    static auto allocator = std::make_unique<Allocator>(); 
     return allocator;
 }
 
