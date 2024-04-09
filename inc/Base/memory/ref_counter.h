@@ -73,7 +73,7 @@ private:
         ZERO_PENDING_FLAG   = ( 1u << ( sizeof(T) * 8u - 2u ) )
     };
 
-#if defined( NDEBUG )
+#if ( true ) // raw memory view for debugging purposes
     mutable struct
     {
         int     value : sizeof(T) * 8u - 2u;
