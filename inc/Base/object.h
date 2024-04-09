@@ -46,7 +46,7 @@ protected:
     friend class ref_ptr;
     
 private:
-    mem::ref_counter< uint32_t > _references;
+    mutable mem::ref_counter< uint32_t > _references;
 };
 
-}
+} // namespace aer
