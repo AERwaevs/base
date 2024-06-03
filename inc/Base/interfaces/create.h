@@ -9,6 +9,10 @@ template< typename T >
 struct ICreate
 {
     template< typename... Args >
+    static constexpr auto create( Args&&... args );
+
+    template< typename... Args >
+    requires std::constructible_from< T, Args... >
     static constexpr auto create( Args&&... args )
     {
         return ref_ptr<T>( new T( std::forward<Args>( args )... ) );

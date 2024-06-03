@@ -11,7 +11,8 @@ namespace mem
 enum AllocatorAffinity : uint8_t
 {
     ALLOCATOR_AFFINITY_OBJECTS  = 0,
-    ALLOCATOR_AFFINITY_LAST     = ALLOCATOR_AFFINITY_OBJECTS + 1
+    ALLOCATOR_AFFINITY_NODES    = 1,
+    ALLOCATOR_AFFINITY_LAST     = ALLOCATOR_AFFINITY_NODES + 1
 };
 
 struct MemoryBlocks;
