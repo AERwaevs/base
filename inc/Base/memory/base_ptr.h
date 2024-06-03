@@ -8,36 +8,38 @@ namespace aer
 namespace mem
 {
     
-template< typename Ptr >
-requires std::is_pointer_v<Ptr>
+template< typename U >
+requires std::is_pointer_v<U>
 struct base_ptr
 {
-    using type = std::remove_pointer_t<Ptr>;
+    using ptr_t     = U;
+    using value_t   = std::remove_pointer_t<U>;
 
-                base_ptr()                      noexcept : ptr( nullptr ) {}
-                base_ptr( const base_ptr& rhs ) noexcept : ptr( rhs.ptr ) {}
-    explicit    base_ptr( Ptr rhs )             noexcept : ptr( rhs )     {}
-                ~base_ptr()                                               {}
+                base_ptr()                          noexcept : ptr( nullptr )   {}
+    explicit    base_ptr( U rhs )                   noexcept : ptr( rhs )       {}
+                base_ptr( base_ptr&& rhs )          noexcept : ptr( rhs.ptr )   {}
+                ~base_ptr()                                                     {}
     
+    explicit    operator bool   ()                  const noexcept { return ( ptr != nullptr ); }
+    explicit    operator U      ()                  const noexcept { return   ptr; }
+    U           operator ->     ()                  const noexcept { return   ptr; }
+    value_t&    operator *      ()                  const noexcept { return  *ptr; }
+    base_ptr&   operator =      ( base_ptr&& rhs )  const noexcept { ptr = rhs.ptr; rhs.ptr = nullptr; }
+    void        operator []     ( int )             const = delete;
     template< class R >
     auto        operator <=>    ( const R* rhs )    const noexcept { return ( ptr <=> rhs ); };
     auto        operator <=>    ( const base_ptr& ) const = default;
-    explicit    operator bool   ()                  const noexcept { return ( ptr != nullptr ); }
-                operator type*  ()                  const noexcept { return   ptr; }
-    type*       operator ->     ()                  const noexcept { return   ptr; }
-    type&       operator *      ()                  const noexcept { return  *ptr; }
-    Ptr         get()                               const noexcept { return   ptr; }
-    Ptr&        get()                                     noexcept { return   ptr; }
-    void        operator []     ( int )             const = delete;
 
-    //[[nodiscard]]
-    //bool        is_protected()                      const          { return true; }
+    U           get()                               const noexcept { return   ptr; }
+    U&          get()                                     noexcept { return   ptr; }
     bool        valid()                             const noexcept { return ( ptr != nullptr ); }
-    //void        clear()                                   noexcept { ptr = nullptr; }
-    void        swap( base_ptr& other )                            { std::swap( ptr, other.ptr ); }
-
+    void        swap( U rhs )                       const noexcept { std::swap( ptr, rhs ); }
+    void        swap( base_ptr& rhs )               const noexcept { std::swap( ptr, rhs.ptr ); }
 protected:
-    Ptr ptr = nullptr;
+    void        set( U rhs )                              noexcept { ptr = rhs; }
+    void        clear()                                   noexcept { ptr = nullptr; }
+private:
+    U ptr = nullptr;
 };
 
 } // namespace aer::mem

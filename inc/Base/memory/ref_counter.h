@@ -73,20 +73,7 @@ private:
         ZERO_PENDING_FLAG   = ( 1u << ( sizeof(T) * 8u - 2u ) )
     };
 
-#if ( true ) // raw memory view for debugging purposes
-    mutable struct
-    {
-        int     value : sizeof(T) * 8u - 2u;
-        bool    zero  : 1;
-        bool    pending_zero : 1;
-    };
-    struct
-    {
-        mutable std::atomic<T> _count;
-    };
-#else
     mutable std::atomic<T> _count;
-#endif
 };
 
 } // namespace aer::mem

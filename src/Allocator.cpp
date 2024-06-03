@@ -6,7 +6,7 @@
 
 namespace aer::mem
 {
-    
+
 Allocator::Allocator()
 {
     AE_INFO_IF( memoryTracking & MEMORY_TRACKING_REPORT_ACTIONS, "Allocator::Allocator() - Allocator created." );

@@ -3,24 +3,13 @@
 namespace aer
 {
 
-template< typename T > constexpr const char* type_name() noexcept
-{
-#ifdef CXX_DEMANGLE
-    int    status( -1 );
-    auto   name = typeid(T).name();
-    auto   demangled = abi::__cxa_demangle( name, 0, 0, &status );
-    return status == 0 ? demangled : name;
-#else
-    return typeid(T).name();
-#endif
-}
+template< typename T > constexpr auto type_name()            noexcept { return typeid(T).name(); }
+template< typename T > constexpr auto type_name( T& )        noexcept { return type_name<T>(); }
+template< typename T > constexpr auto type_name( const T& )  noexcept { return type_name<const T>(); }     
 
-#define AER_TYPE_NAME( T )                                                                              \
-template<> constexpr const char*             type_name<T>()         noexcept { return #T; }             \
-template<> constexpr const char*             type_name<const T>()   noexcept { return "const "#T; }
-
-template< typename T > constexpr const char* type_name( T& )        noexcept { return type_name<T>(); }
-template< typename T > constexpr const char* type_name( const T& )  noexcept { return type_name<const T>(); }     
+#define AER_TYPE_NAME( T )\
+template<> auto type_name<T>()         noexcept { return #T; }\
+template<> auto type_name<const T>()   noexcept { return "const "#T; }
 
 template< typename T >
 struct ITypeInfo

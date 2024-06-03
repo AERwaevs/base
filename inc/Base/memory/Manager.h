@@ -2,8 +2,6 @@
 
 #include <memory>
 
-#include ""
-
 namespace aer
 {
 namespace mem
@@ -22,7 +20,7 @@ public:
 }
 
 template< typename T >
-static inline bool ref( const T const* ob, std::memory_order order = std::memory_order_relaxed ) noexcept
+static inline bool ref( const T const* obj, std::memory_order order = std::memory_order_relaxed ) noexcept
 {
     return Manager::instance()->ref( obj );
 }

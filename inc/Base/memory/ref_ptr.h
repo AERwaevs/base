@@ -21,73 +21,61 @@ namespace aer
 template< typename T >
 struct ref_ptr : public mem::base_ptr< std::add_pointer_t<T> >
 {
-    using Base = mem::base_ptr<std::add_pointer_t<T>>;
-    using Base::ptr;
+    template< class R > friend class ref_ptr;
 
-                ref_ptr()                       noexcept : Base() {}    
-                ref_ptr( const ref_ptr& rhs )   noexcept : Base( rhs ) { if( ptr ) ptr->_ref(); }
-    explicit    ref_ptr( T* rhs )               noexcept : Base( rhs ) { if( ptr ) ptr->_ref(); }
-                ~ref_ptr()                      noexcept               { if( ptr ) ptr->_unref(); }
+    using ptr_t     = mem::base_ptr<std::add_pointer_t<T>>;
+    using value_t   = T;
+
+    using ptr_t::valid;
+    using ptr_t::get;
+
+                ref_ptr()                        noexcept : ptr_t( nullptr )   {}
+                ref_ptr( const ref_ptr& rhs )    noexcept : ptr_t( rhs.get() ) { if( valid() ) get()->_ref(); }
+    explicit    ref_ptr( T* rhs )                noexcept : ptr_t( rhs )       { if( valid() ) get()->_ref(); }
+                ~ref_ptr()                       noexcept                      { if( valid() ) get()->_unref(); }
 
     template< class R >
-                ref_ptr( ref_ptr<R>&& rhs )      noexcept : Base( rhs ) { rhs.ptr = nullptr; }
+                ref_ptr( ref_ptr<R>&& rhs )      noexcept : ptr_t( rhs.get() ) {}
     template< class R >
-                ref_ptr( const ref_ptr<R>& rhs ) noexcept : Base( rhs ) { if( ptr ) ptr->_ref(); }
+                ref_ptr( const ref_ptr<R>& rhs ) noexcept : ptr_t( rhs.get() ) { if( valid() ) get()->_ref(); }
     template< class R >
-    explicit    ref_ptr( R* rhs )                noexcept : Base( rhs ) { if( ptr ) ptr->_ref(); }
+    explicit    ref_ptr( R* rhs )                noexcept : ptr_t( rhs )       { if( valid() ) get()->_ref(); }
+
+    template< typename... Args > requires std::constructible_from< T, Args... > static constexpr
+    ref_ptr<T> create( Args&&... args ) 
+    {
+        return ref_ptr( new T( std::forward<Args>( args )... ) );
+    }
 
     ref_ptr& operator = ( T* rhs )
     {
-        if( ptr != rhs )
-        {
-            T*  tmp_ptr     = ptr;
-                ptr   = rhs;
-            if( ptr ) ptr->_ref();
-            if( tmp_ptr )   tmp_ptr->_unref();
-        }
+        if( get() != rhs ) ptr_t::swap( rhs );
         return *this;
     }
 
     ref_ptr& operator = ( const ref_ptr& rhs )
     {
-        if( ptr != rhs.ptr )
-        {
-            T*  tmp_ptr = ptr;
-                ptr     = rhs.ptr;
-            if( ptr )     ptr->_ref();
-            if( tmp_ptr ) tmp_ptr->_unref();
-        }
+        if( get() != rhs.ptr ) ptr_t::swap( rhs );
         return *this;
     }
 
     template< class R >
     ref_ptr& operator = ( const ref_ptr<R>& rhs )
     {
-        if( ptr != rhs.ptr )
-        {
-            T*  tmp_ptr = ptr;
-                ptr     = rhs.ptr;
-            if( ptr )     ptr->_ref();
-            if( tmp_ptr ) tmp_ptr->_unref();
-        }
+        if( get() != rhs.ptr ) ptr_t::swap( rhs );
         return *this;
     }
 
     template< class R >
     ref_ptr& operator = ( ref_ptr<R>&& rhs )
     {
-        if( ptr != rhs.ptr )
+        if( get() != rhs.get() )
         {
-            if( ptr )     ptr->_unref();
-                ptr     = rhs.ptr;
-                rhs.ptr = nullptr;
+            if( valid() ) get()->_unref();
+            ptr_t::set( rhs.get() );
         }
         return *this;
     }
-    
-protected:
-    template< class R >
-    friend class ref_ptr;
 };
 
 } // namespace aer

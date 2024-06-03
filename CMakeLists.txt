@@ -46,6 +46,7 @@ set( HEADERS
     ${BASE_INC}/Base/EventListener.h
     ${BASE_INC}/Base/interface.h
     ${BASE_INC}/Base/object.h
+    ${BASE_INC}/Base/inherit.h
     ${BASE_INC}/Base/log.h
     ${BASE_INC}/Base/platform.h
     ${BASE_INC}/Base/interfaces/create.h
@@ -86,15 +87,16 @@ target_include_directories( base
 
 add_library( aer::base ALIAS base )
 
-if( BUILD_TESTING )
+if( BUILD_TEST )
     add_subdirectory( lib/catch )
     set( BASE_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test )
     
     add_executable( tests
-        ${BASE_TEST_DIR}/MemorySlots_test.cpp
+        #${BASE_TEST_DIR}/MemorySlots_test.cpp
+        ${BASE_TEST_DIR}/object_test.cpp
     )
 
-    target_compile_features(    tests PRIVATE cxx_std_20 )
+    target_compile_features(    tests PRIVATE cxx_std_23 )
     target_include_directories( tests PRIVATE ${BASE_INC} )
-    target_link_libraries( tests PRIVATE Catch2::Catch2 )
+    target_link_libraries(      tests PRIVATE aer::base Catch2::Catch2WithMain )
 endif()

@@ -12,9 +12,9 @@ namespace aer
     
 struct scratch_memory : public Object, public Interfaces< scratch_memory, ICreate >
 {
-    uint8_t* buffer = nullptr;
-    uint8_t* ptr    = nullptr;
-    size_t   size   = 0;
+    uint8_t*     buffer = nullptr;
+    uint8_t*     ptr    = nullptr;
+    const size_t size   = 0;
 
     ref_ptr<scratch_memory> next;
 

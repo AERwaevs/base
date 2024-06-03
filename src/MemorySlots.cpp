@@ -56,7 +56,7 @@ bool MemorySlots::release( offset_t offset, size_t size )
     auto itr = _reservedMemory.find( offset );
     if( itr == _reservedMemory.end() ) return false; // entry not found
 
-    if( size != itr->second )
+    if( size != 0 && size != itr->second )
     {
         AE_INFO_IF( report, "MemorySlots::release() - %zu bytes requested, but %zu bytes were reserved.", size, itr->second );
         size = itr->second;
