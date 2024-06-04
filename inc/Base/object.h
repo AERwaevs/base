@@ -10,21 +10,25 @@ namespace aer
 class Object
 {
 public:
+    static void* operator new( size_t size )  { return mem::alloc( size ); }
+    static void  operator delete( void* ptr ) { mem::dealloc( ptr ); }
+
+    template< typename Self > constexpr
+    auto& type_info( this Self&& ) noexcept { return typeid( Self ); }
+
+    template< typename Self > constexpr
+    auto type_size( this Self&& ) noexcept { return sizeof( Self ); }
+
+    template< typename Self > constexpr
+    auto type_name( this Self&& ) noexcept { return aer::type_name< Self >(); }
+
+    template< typename Self > constexpr
+    bool is_compatible( this Self&&, const std::type_info& type ) noexcept { return typeid( Self ) == type; }
+
     inline auto ref_count( std::memory_order order = std::memory_order_relaxed ) const noexcept
     { 
         return _references.load(); 
     }
-    
-    static void* operator new( size_t size )
-    {
-        return mem::alloc( size );
-    }
-
-    static void operator delete( void* ptr )
-    {
-        mem::dealloc( ptr );
-    }
-
 protected:
     explicit Object() noexcept : _references( 0 ) {}
     virtual ~Object()                = default;
