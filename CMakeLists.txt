@@ -49,6 +49,7 @@ set( HEADERS
     ${BASE_INC}/Base/log.h
     ${BASE_INC}/Base/platform.h
     ${BASE_INC}/Base/type_name.h
+    ${BASE_INC}/Base/thread_utils.h
     
     ${BASE_INC}/Base/memory/MemoryTracking.h
     ${BASE_INC}/Base/memory/MemoryBlock.h
