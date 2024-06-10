@@ -44,22 +44,24 @@ set( HEADERS
     ${BASE_INC}/Base/Base.h
     ${BASE_INC}/Base/Event.h
     ${BASE_INC}/Base/EventListener.h
-    ${BASE_INC}/Base/interface.h
     ${BASE_INC}/Base/object.h
     ${BASE_INC}/Base/node.h
     ${BASE_INC}/Base/log.h
     ${BASE_INC}/Base/platform.h
-    ${BASE_INC}/Base/interfaces/create.h
-    ${BASE_INC}/Base/interfaces/singleton.h
-    ${BASE_INC}/Base/interfaces/type_info.h
+    ${BASE_INC}/Base/type_name.h
+    
+    ${BASE_INC}/Base/memory/MemoryTracking.h
+    ${BASE_INC}/Base/memory/MemoryBlock.h
+    ${BASE_INC}/Base/memory/MemoryBlocks.h
+    ${BASE_INC}/Base/memory/MemorySlots.h
     ${BASE_INC}/Base/memory/Allocator.h
+    ${BASE_INC}/Base/memory/AllocatorPolicy.h
+    ${BASE_INC}/Base/memory/Manager.h
+
     ${BASE_INC}/Base/memory/scratch_memory.h
     ${BASE_INC}/Base/memory/base_ptr.h
     ${BASE_INC}/Base/memory/ref_ptr.h
     ${BASE_INC}/Base/memory/spy_ptr.h
-    ${BASE_INC}/Base/io/Read.h
-    ${BASE_INC}/Base/io/Write.h
-    ${BASE_INC}/Base/io/ReaderWriter.h
 )
 
 set( SOURCES 

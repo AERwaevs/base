@@ -11,12 +11,4 @@ template< typename T > constexpr auto type_name( const T& )  noexcept { return t
 template<> auto type_name<T>()         noexcept { return #T; }\
 template<> auto type_name<const T>()   noexcept { return "const "#T; }
 
-template< typename T >
-struct ITypeInfo
-{   
-    static constexpr const char*           type_name() noexcept { return aer::type_name<T>(); }
-    static constexpr const std::type_info& type_info() noexcept { return typeid(T);           }
-    static constexpr const std::size_t     type_size() noexcept { return sizeof(T);           }
-};
-
 }
