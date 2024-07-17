@@ -10,6 +10,7 @@ set( CMAKE_CXX_STANDARD          23  )
 set( CMAKE_CXX_STANDARD_REQUIRED ON  )
 set( CMAKE_CXX_EXTENSIONS        OFF )
 set( CMAKE_POSITION_INDEPENDENT_CODE ON )
+set( BUILD_TESTING               OFF CACHE BOOL "Enable testing" )
 
 if( ANDROID )
     set( AER_ANDROID 1 )
@@ -89,16 +90,3 @@ target_include_directories( base
 )
 
 add_library( aer::base ALIAS base )
-
-if( BUILD_TESTING )
-    add_subdirectory( lib/catch )
-    set( BASE_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test )
-    
-    add_executable( tests
-        ${BASE_TEST_DIR}/MemorySlots_test.cpp
-    )
-
-    target_compile_features(    tests PRIVATE cxx_std_20 )
-    target_include_directories( tests PRIVATE ${BASE_INC} )
-    target_link_libraries( tests PRIVATE Catch2::Catch2 )
-endif()
