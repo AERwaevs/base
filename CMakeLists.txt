@@ -22,7 +22,7 @@ else()
     set( AER_LINUX 1 )
 endif()
 
-# AEON::Base --------------------------------------------------------------------------------------
+# AER::Base --------------------------------------------------------------------------------------
 set( BASE_LIB ${CMAKE_CURRENT_SOURCE_DIR}/lib )
 set( BASE_INC ${CMAKE_CURRENT_SOURCE_DIR}/inc )
 set( BASE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src )
