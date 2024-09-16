@@ -16,7 +16,7 @@ namespace aer
             if( typeid( *this ) != typeid( E ) ) return false;
 
             _handled |= (target->*function)( static_cast<E&>(*this) );
-            AE_WARN_IF( !_handled, "Unhandled %s", type_name<E>() );
+            AE_WARN_IF( !_handled, "Unhandled %s", type_name() );
             return _handled;
         }
 
