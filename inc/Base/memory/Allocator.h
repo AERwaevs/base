@@ -1,5 +1,7 @@
 #pragma once
 
+#include <mutex>
+
 #include "MemoryTracking.h"
 #include "AllocatorPolicy.h"
 
