@@ -32,7 +32,7 @@ public:
     bool is_compatible( this Self&&, const std::type_info& type ) noexcept { return typeid( Self ) == type; }
 
     template< typename Self > constexpr
-    bool write ( this Self&& self, std::filesystem::path& path )
+    bool write ( this Self&& self, std::string& path )
     {
         std::ofstream file( path, std::ios::binary );
         AE_WARN_IF( !file.is_open(), "Failed to open file: %s", path.c_str() );
@@ -56,7 +56,7 @@ protected:
     }
 
     template< typename T >
-    static inline auto read( const std::filesystem::path& path )
+    static inline auto read( const std::string& path )
     {
         std::ifstream file( path, std::ios::ate | std::ios::binary );
         AE_FATAL_IF( !file.is_open(), "Failed to open file: %s", path.c_str() );
