@@ -20,6 +20,7 @@
 #include "type_name.h"
 #include "log.h"
 #include "object.h"
+#include "inherit.h"
 
 #include "memory/base_ptr.h"
 #include "memory/ref_ptr.h"

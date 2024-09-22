@@ -1,7 +1,13 @@
 #pragma once
 
+#include <concepts>
+#include <filesystem>
+#include <ios>
+
 #include "memory/Allocator.h"
 #include "memory/ref_counter.h"
+
+#include "memory/ref_ptr.h"
 
 namespace aer
 {
@@ -25,13 +31,48 @@ public:
     template< typename Self > constexpr
     bool is_compatible( this Self&&, const std::type_info& type ) noexcept { return typeid( Self ) == type; }
 
+    template< typename Self > constexpr
+    bool write ( this Self&& self, std::filesystem::path& path )
+    {
+        std::ofstream file( path, std::ios::binary );
+        AE_WARN_IF( !file.is_open(), "Failed to open file: %s", path.c_str() );
+        if( !file.is_open() ) return false;
+
+        file.write( reinterpret_cast<const char*>( self ), sizeof( Self ) );
+        file.close();
+
+        return true;
+    }
+
     inline auto ref_count( std::memory_order order = std::memory_order_relaxed ) const noexcept
     { 
         return _references.load(); 
     }
 protected:
+    template< typename T, typename... Args >
+    static inline auto create( Args&&... args )
+    {
+        return ref_ptr<T>( new T( std::forward<Args>( args )... ) );
+    }
+
+    template< typename T >
+    static inline auto read( const std::filesystem::path& path )
+    {
+        std::ifstream file( path, std::ios::ate | std::ios::binary );
+        AE_FATAL_IF( !file.is_open(), "Failed to open file: %s", path.c_str() );
+
+        std::size_t         size( file.tellg() );
+        std::vector<char>   buffer( size );
+
+        file.seekg( 0 );
+        file.read( buffer.data(), size );
+        file.close();
+
+        return ref_ptr<T>( new T( buffer ) );
+    }
+    
     explicit Object() noexcept : _references( 0 ) {}
-    virtual ~Object()                = default;
+    virtual ~Object() noexcept       = default;
              Object( Object&& )      = delete;
              Object( const Object& ) = delete;
 

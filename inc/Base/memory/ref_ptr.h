@@ -21,6 +21,8 @@ namespace aer
 template< typename T >
 struct ref_ptr : public mem::base_ptr< std::add_pointer_t<T> >
 {
+    using element_type = std::remove_extent_t<T>;
+    
     using Base = mem::base_ptr<std::add_pointer_t<T>>;
     using Base::ptr;
 

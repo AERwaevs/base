@@ -46,6 +46,7 @@ set( HEADERS
     ${BASE_INC}/Base/Event.h
     ${BASE_INC}/Base/EventListener.h
     ${BASE_INC}/Base/object.h
+    ${BASE_INC}/Base/inherit.h
     ${BASE_INC}/Base/node.h
     ${BASE_INC}/Base/log.h
     ${BASE_INC}/Base/platform.h

@@ -22,12 +22,12 @@ namespace aer::mem
 // keeping purposes. Hence the maximum representable value in the
 // counter is 2^(8*sizeof(T)-2) - 1
 
-template< typename T = uint32_t >
-requires std::unsigned_integral<T> && ( !std::same_as<T, bool> )
+template< std::unsigned_integral T = uint32_t > requires( !std::same_as<T, bool> )
 struct ref_counter
 {
              ref_counter()            noexcept : _count( 1u ) {}
     explicit ref_counter( T desired ) noexcept : _count( desired ) {}
+            ~ref_counter()            noexcept = default;
 
     // Increment if the counter is not zero.
     //

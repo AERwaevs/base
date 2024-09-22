@@ -10,7 +10,7 @@
 namespace aer
 {
     
-struct scratch_memory : public Object, public Interfaces< scratch_memory, ICreate >
+struct scratch_memory : public inherit<scratch_memory, Object>
 {
     uint8_t* buffer = nullptr;
     uint8_t* ptr    = nullptr;
