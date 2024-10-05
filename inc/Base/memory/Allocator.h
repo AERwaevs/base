@@ -38,12 +38,12 @@ private:
     mutable     std::mutex                      _mutex;
 };
 
-static inline void* alloc( size_t size, AllocatorAffinity affinity = ALLOCATOR_AFFINITY_OBJECTS )
+constexpr static inline void* alloc( size_t size, AllocatorAffinity affinity = ALLOCATOR_AFFINITY_OBJECTS )
 {
     return Allocator::instance()->allocate( size, affinity );
 }
 
-static inline void dealloc( void* ptr, size_t size = 0 )
+constexpr static inline void dealloc( void* ptr, size_t size = 0 )
 {
     Allocator::instance()->deallocate( ptr, size );
 }

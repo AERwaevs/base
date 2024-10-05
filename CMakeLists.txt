@@ -6,11 +6,11 @@ project( aer::base
     LANGUAGES CXX
 )
 
-set( CMAKE_CXX_STANDARD          23  )
-set( CMAKE_CXX_STANDARD_REQUIRED ON  )
-set( CMAKE_CXX_EXTENSIONS        OFF )
-set( CMAKE_POSITION_INDEPENDENT_CODE ON )
-set( BUILD_TESTING               OFF CACHE BOOL "Enable testing" )
+set( CMAKE_CXX_STANDARD                 23  )
+set( CMAKE_CXX_STANDARD_REQUIRED        ON  )
+set( CMAKE_CXX_EXTENSIONS               OFF )
+set( CMAKE_POSITION_INDEPENDENT_CODE    ON )
+set( BUILD_TESTING                      OFF CACHE BOOL "Enable testing" )
 
 if( ANDROID )
     set( AER_ANDROID 1 )
@@ -61,6 +61,7 @@ set( HEADERS
     ${BASE_INC}/Base/memory/AllocatorPolicy.h
     ${BASE_INC}/Base/memory/Manager.h
 
+    ${BASE_INC}/Base/memory/managed_object.h
     ${BASE_INC}/Base/memory/scratch_memory.h
     ${BASE_INC}/Base/memory/base_ptr.h
     ${BASE_INC}/Base/memory/ref_ptr.h
