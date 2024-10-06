@@ -23,11 +23,11 @@ namespace aer::mem
 // counter is 2^(8*sizeof(T)-2) - 1
 
 template< std::unsigned_integral T = uint32_t > requires( !std::same_as<T, bool> )
-struct ref_counter
+struct atomic_reference_counter
 {
-             ref_counter()            noexcept : _count( 1u ) {}
-    explicit ref_counter( T desired ) noexcept : _count( desired ) {}
-            ~ref_counter()            noexcept = default;
+             atomic_reference_counter()            noexcept : _count( 1u ) {}
+    explicit atomic_reference_counter( T desired ) noexcept : _count( desired ) {}
+            ~atomic_reference_counter()            noexcept = default;
 
     // Increment if the counter is not zero.
     //
@@ -88,5 +88,7 @@ private:
     mutable std::atomic<T> _count;
 #endif
 };
+
+typedef atomic_reference_counter<uint32_t> ref32_t;
 
 } // namespace aer::mem

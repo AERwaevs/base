@@ -5,26 +5,48 @@
 
 #include "ref_counter.h"
 
-namespace aer { namespace mem {
+namespace aer {
+namespace mem {
 
-template< typename T >
+enum class eject_action : uint8_t
+{
+    nothing,
+    delay,
+    destroy
+};
+
+template< std::destructible T >
 struct managed_object
 {
     inline auto ref_count( std::memory_order order = std::memory_order_seq_cst ) const noexcept
     { 
-        return _references.load( order ); 
+        return _hard_refs.load( order ); 
     }
-    inline void ref( std::memory_order order = std::memory_order_seq_cst ) const noexcept
+    inline bool hard_ref( std::memory_order order = std::memory_order_relaxed ) const noexcept
     { 
-        _references.increment( order );
+        _hard_refs.increment( order );
     }
-    inline void unref( std::memory_order order = std::memory_order_seq_cst ) const noexcept 
+    inline bool weak_ref( std::memory_order order = std::memory_order_relaxed ) const noexcept
     { 
-        if( _references.decrement( order ) ) delete this;
+        _weak_refs.increment( order );
+    }
+    inline eject_action unref( std::memory_order order = std::memory_order_release ) const noexcept 
+    { 
+        if( _hard_refs.decrement( order ) )
+        {
+            std::atomic_thread_fence( std::memory_order_acquire );
+            if( _weak_refs.load() <= 1 ) { dispose(); return eject_action::destroy; }
+            else return eject_action::delay;
+        }
+        return eject_action::nothing;
+    }
+    inline bool weak_unref( std::memory_order order = std::memory_order_release ) const noexcept 
+    { 
+        return _weak_refs.decrement( order ) == 0;
     }
 protected:
     template< typename... Args > requires( std::constructible_from<T, Args...> )
-    explicit managed_object( Args&&... args ) noexcept : _references( 0 )
+    explicit managed_object( Args&&... args ) noexcept : _hard_refs( 0 ), _weak_refs( 0 )
     {
         new( &_storage ) T( std::forward<Args>( args )... );
     }
@@ -36,8 +58,9 @@ protected:
     const T*    get() const noexcept { return std::launder( reinterpret_cast<const T*>( &_storage ) ); }
     const void  dispose()   noexcept { get()->~T(); }
 private:
-    mutable ref_counter< uint32_t > _references{ 0 };
     alignas(alignof(T))  uint8_t    _storage[ sizeof(T) ];
+                         ref32_t    _hard_refs;
+                         ref32_t    _weak_refs;
 };
 
 }} // namespace aer::mem
