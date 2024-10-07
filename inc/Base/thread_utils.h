@@ -13,7 +13,7 @@ namespace aer { namespace utils
 
 static size_t num_threads()
 {
-    static size_t num_threads = [] -> size_t
+    static size_t num_threads = []() -> size_t
     {
         if( const auto num = std::getenv("NUM_THREADS") ) return std::stoi( num ) + 1;
         else return std::thread::hardware_concurrency() + 1;
