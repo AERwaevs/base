@@ -62,6 +62,13 @@ struct atomic_reference_counter
         return ( val & ZERO_FLAG ) ? 0 : val;
     }
 
+    // Resets the value of the counter to the given value. This may be called when the counter
+    // is zero to bring it back to a non-zero value.
+    void reset( T desired, std::memory_order order = std::memory_order_seq_cst ) const noexcept
+    {
+        x.store( desired == 0 ? zero_flag : desired, order );
+    }
+
     explicit operator T()   const noexcept { return load(); }
         bool operator ++ () const noexcept { return increment(); }
         bool operator -- () const noexcept { return decrement(); }
