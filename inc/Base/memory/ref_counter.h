@@ -47,7 +47,7 @@ struct atomic_reference_counter
         if( _count.fetch_sub( 1u, order ) == 1u )
         {
             T expected = 0;
-            if( _count.compare_exchange_strong( expected, ZERO_FLAG ) ) return true;
+            if( _count.compare_exchange_strong( expected, ZERO_FLAG ) ) [[likely]] return true;
             else if( ( expected & ZERO_PENDING_FLAG ) && ( _count.exchange( ZERO_FLAG ) & ZERO_PENDING_FLAG ) ) return true;
         }
         return false;
@@ -58,7 +58,7 @@ struct atomic_reference_counter
     T load( std::memory_order order = std::memory_order_seq_cst ) const noexcept
     {
         auto val = _count.load( order );
-        if( val == 0 && _count.compare_exchange_strong( val, ZERO_FLAG | ZERO_PENDING_FLAG ) ) return 0;
+        if( val == 0 && _count.compare_exchange_strong( val, ZERO_FLAG | ZERO_PENDING_FLAG ) ) [[unlikely]] return 0;
         return ( val & ZERO_FLAG ) ? 0 : val;
     }
 
@@ -73,7 +73,7 @@ private:
         ZERO_PENDING_FLAG   = ( 1u << ( sizeof(T) * 8u - 2u ) )
     };
 
-#if ( true ) // raw memory view for debugging purposes
+#ifndef NDEBUG // raw memory view for debugging purposes
     mutable struct
     {
         int     value : sizeof(T) * 8u - 2u;
