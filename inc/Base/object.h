@@ -11,8 +11,7 @@
 
 namespace aer
 {
-
-
+    
 class Object
 {
 public:
@@ -30,6 +29,9 @@ public:
 
     template< typename Self > constexpr
     bool is_compatible( this Self&&, const std::type_info& type ) noexcept { return typeid( Self ) == type; }
+
+    template< typename Self, typename V > constexpr
+    void accept( this Self&& self, V& visitor ) { visitor.visit( self ); }
 
     template< typename Self > constexpr
     bool write ( this Self&& self, std::string& path )
