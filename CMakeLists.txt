@@ -1,7 +1,13 @@
 # cmake -------------------------------------------------------------------------------------------
 cmake_minimum_required( VERSION 3.20 )
 
-project( aer::base
+if(NOT DEFINED PROJECT_NAME)
+  set(NOT_SUBPROJECT ON)
+else()
+  set(NOT_SUBPROJECT OFF)
+endif()
+
+project( AER::Base
     VERSION 0.1.0
     LANGUAGES CXX
 )
