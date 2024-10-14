@@ -2,8 +2,8 @@
 
 #include "MemoryBlock.h"
 
-namespace aer::mem
-{
+namespace aer {
+namespace mem {
 
 class Allocator;
 // controls a collection of MemoryBlock instances
@@ -25,4 +25,4 @@ protected:
     std::shared_ptr<MemoryBlock>                  _latestBlock;
 };
 
-} // namespace aer::mem
+}} // namespace aer::mem

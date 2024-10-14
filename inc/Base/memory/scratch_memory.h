@@ -16,11 +16,12 @@ struct scratch_memory : public inherit<scratch_memory, Object>
     uint8_t* ptr    = nullptr;
     size_t   size   = 0;
 
-    ref_ptr<scratch_memory> next;
+    scratch_memory* next;
 
     explicit scratch_memory( size_t in_size ) : buffer( new uint8_t[in_size] ), ptr( buffer ), size( in_size ) {};
             ~scratch_memory() { delete[] buffer; }
              scratch_memory( const scratch_memory& ) = delete;
+             scratch_memory( scratch_memory&& rhs ) : buffer( new uint8_t[rhs.size] ), ptr( buffer ), size( rhs.size ) {};
              
     scratch_memory& operator = ( const scratch_memory& ) = delete;
 
@@ -44,7 +45,7 @@ struct scratch_memory : public inherit<scratch_memory, Object>
             return allocated_ptr;
         }
 
-        if( !next ) next = scratch_memory::create( std::max( size, allocate_size ) );
+        if( !next ) next = new scratch_memory( std::max( size, allocate_size ) );
         return next->allocate<T>( num );
     }
 

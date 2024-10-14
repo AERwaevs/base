@@ -1,10 +1,7 @@
 #pragma once
 
-namespace aer
-{
-
-namespace mem
-{ 
+namespace aer {
+namespace mem { 
 
 enum AllocatorPolicy : uint8_t
 {
@@ -14,6 +11,24 @@ enum AllocatorPolicy : uint8_t
     ALLOCATOR_POLICY_AER_ALLOC_DEALLOC,
     ALLOCATOR_POLICY_AER_ACQUIRE_RETIRE,
     ALLOCATOR_POLICY_DEFAULT = ALLOCATOR_POLICY_STD_NEW_DELETE
+};
+
+enum allocator_policy2 : uint8_t
+{
+    ALLOCATOR_POLICY2_STD_NEW_DELETE,
+    ALLOCATOR_POLICY2_AER_ALLOC_DEALLOC,
+    ALLOCATOR_POLICY2_AER_ACQUIRE_RETIRE,
+    ALLOCATOR_POLICY2_DEFAULT = ALLOCATOR_POLICY_STD_NEW_DELETE
+};
+
+enum block_policy : uint8_t
+{
+    BLOCK_POLICY_NO_DELETE = 0,
+    BLOCK_POLICY_STD_NEW_DELETE,
+    BLOCK_POLICY_STD_MALLOC_FREE,
+    BLOCK_POLICY_AER_ALLOC_DEALLOC,
+    BLOCK_POLICY_AER_ACQUIRE_RETIRE,
+    BLOCK_POLICY_DEFAULT = BLOCK_POLICY_STD_NEW_DELETE
 };
 
 } // namespace aer::mem

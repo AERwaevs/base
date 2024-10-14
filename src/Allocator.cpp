@@ -4,9 +4,10 @@
 
 #include <mutex>
 
-namespace aer::mem
-{
-    
+namespace aer::mem {
+
+#if( ALLOCATOR_VERSION == 1)
+
 Allocator::Allocator()
 {
     AE_INFO_IF( memoryTracking & MEMORY_TRACKING_REPORT_ACTIONS, "Allocator::Allocator() - Allocator created." );
@@ -73,5 +74,46 @@ bool Allocator::deallocate( void* ptr, std::size_t size )
 
     return false;
 }
+
+#elif( ALLOCATOR_VERSION == 2 )
+
+template<> allocator_new_delete_t::allocator2()
+{
+    AE_INFO_IF( memoryTracking & MEMORY_TRACKING_REPORT_ACTIONS, "Allocator created with policy NEW_DELETE" );
+}
+
+template<> allocator_aer_alloc_t::allocator2()
+{
+    AE_INFO_IF( memoryTracking & MEMORY_TRACKING_REPORT_ACTIONS, "Allocator created with policy ALLOC_DEALLOC" );
+}
+
+template<> allocator_aer_acquire_t::allocator2()
+{
+    AE_INFO_IF( memoryTracking & MEMORY_TRACKING_REPORT_ACTIONS, "Allocator created with policy ACQUIRE_RETIRE" );
+}
+
+template<> void* allocator_new_delete_t::allocate( size_t size )
+{
+    return operator new( size );
+}
+
+template<> bool allocator_new_delete_t::deallocate( void* ptr, size_t size )
+{
+    operator delete( ptr );
+    return true;
+}
+
+template<> void* allocator_aer_alloc_t::allocate( size_t size )
+{
+    return alloc( size );
+}
+
+template<> bool allocator_aer_alloc_t::deallocate( void* ptr, size_t size )
+{
+    dealloc( ptr, size );
+    return true;
+}
+
+#endif // ALLOCATOR_VERSION == 2
 
 } // namespace aer::mem

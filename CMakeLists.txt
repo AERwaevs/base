@@ -59,8 +59,8 @@ set( HEADERS
     ${BASE_INC}/Base/memory/MemorySlots.h
     ${BASE_INC}/Base/memory/Allocator.h
     ${BASE_INC}/Base/memory/AllocatorPolicy.h
-    ${BASE_INC}/Base/memory/Manager.h
-
+    
+    ${BASE_INC}/Base/memory/manager_base.h
     ${BASE_INC}/Base/memory/managed_object.h
     ${BASE_INC}/Base/memory/scratch_memory.h
     ${BASE_INC}/Base/memory/base_ptr.h

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <concepts>
 #include <stdint.h>
 #include <atomic>
 
@@ -66,7 +67,7 @@ struct atomic_reference_counter
     // is zero to bring it back to a non-zero value.
     void reset( T desired, std::memory_order order = std::memory_order_seq_cst ) const noexcept
     {
-        x.store( desired == 0 ? zero_flag : desired, order );
+        _count.store( desired == 0 ? ZERO_FLAG : desired, order );
     }
 
     explicit operator T()   const noexcept { return load(); }
@@ -81,15 +82,12 @@ private:
     };
 
 #ifndef NDEBUG // raw memory view for debugging purposes
-    mutable struct
-    {
-        int     value : sizeof(T) * 8u - 2u;
-        bool    zero  : 1;
-        bool    pending_zero : 1;
-    };
-    struct
+    union
     {
         mutable std::atomic<T> _count;
+        mutable int            value : sizeof(T) * 8u - 2u;
+        mutable bool           zero  : 1;
+        mutable bool           pending_zero : 1;
     };
 #else
     mutable std::atomic<T> _count;

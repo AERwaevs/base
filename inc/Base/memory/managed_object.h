@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <memory>
+#include <concepts>
 
 #include "ref_counter.h"
 
@@ -11,56 +12,49 @@ namespace mem {
 enum class eject_action : uint8_t
 {
     nothing,
-    delay,
+    defer,
     destroy
 };
 
 template< std::destructible T >
 struct managed_object
 {
-    inline auto ref_count( std::memory_order order = std::memory_order_seq_cst ) const noexcept
-    { 
-        return _hard_refs.load( order ); 
-    }
-    inline bool hard_ref( std::memory_order order = std::memory_order_relaxed ) const noexcept
-    { 
-        _hard_refs.increment( order );
-    }
-    inline bool weak_ref( std::memory_order order = std::memory_order_relaxed ) const noexcept
-    { 
-        _weak_refs.increment( order );
-    }
-    inline eject_action unref( std::memory_order order = std::memory_order_release ) const noexcept 
-    { 
-        if( _hard_refs.decrement( order ) )
-        {
-            std::atomic_thread_fence( std::memory_order_acquire );
-            if( _weak_refs.load() <= 1 ) { dispose(); return eject_action::destroy; }
-            else return eject_action::delay;
-        }
-        return eject_action::nothing;
-    }
-    inline bool weak_unref( std::memory_order order = std::memory_order_release ) const noexcept 
-    { 
-        return _weak_refs.decrement( order ) == 0;
-    }
-protected:
+    using type = T;
+
+    void* operator new( size_t size )  { return mem::alloc( size ); }
+    void  operator delete( void* ptr ) { mem::dealloc( ptr ); }
+
     template< typename... Args > requires( std::constructible_from<T, Args...> )
-    explicit managed_object( Args&&... args ) noexcept : _hard_refs( 0 ), _weak_refs( 0 )
-    {
-        new( &_storage ) T( std::forward<Args>( args )... );
+    explicit managed_object( Args&&... args ) noexcept { new( &_storage ) type( std::forward<Args>( args )... ); }
+             managed_object( type&& new_obj ) noexcept { new( &_storage ) type( std::move( new_obj ) ); }
+             managed_object( type* ptr )      noexcept { new( &_storage ) type( std::move( *ptr ) ); }
+             managed_object( const managed_object& ) = default;
+             managed_object( managed_object&& )      = default;
+            ~managed_object() noexcept               = default;
+
+          type*  get()              noexcept { return std::launder( reinterpret_cast<T*>( &_storage ) ); }
+    const type*  get()        const noexcept { return std::launder( reinterpret_cast<const T*>( &_storage ) ); }
+    auto         weak_refs()  const noexcept { return _weak_refs.load(); }
+    auto         hard_refs()  const noexcept { return _hard_refs.load(); }
+    bool         ref_weak()   const noexcept { return _weak_refs.increment( std::memory_order_relaxed ); }
+    bool         ref_hard()   const noexcept { return _hard_refs.increment( std::memory_order_relaxed ); }
+    bool         unref_weak() const noexcept { return _weak_refs.decrement( std::memory_order_release ) == 0; }
+    eject_action unref_hard() const noexcept 
+    { 
+        if( _hard_refs.decrement( std::memory_order_release ) == false ) return eject_action::nothing;
+        std::atomic_thread_fence( std::memory_order_acquire );
+        if( _weak_refs.load( std::memory_order_relaxed ) != 0 ) return eject_action::defer;
+        else dispose(); return eject_action::destroy;
+        
     }
-    virtual ~managed_object() noexcept               = default;
-             managed_object( const managed_object& ) = delete;
-             managed_object( managed_object&& )      = delete;
+
 protected:
-          T*    get()       noexcept { return std::launder( reinterpret_cast<T*>( &_storage ) ); }
-    const T*    get() const noexcept { return std::launder( reinterpret_cast<const T*>( &_storage ) ); }
-    const void  dispose()   noexcept { get()->~T(); }
+    const void dispose() const noexcept { get()->~type(); }
 private:
-    alignas(alignof(T))  uint8_t    _storage[ sizeof(T) ];
-                         ref32_t    _hard_refs;
-                         ref32_t    _weak_refs;
+    //typename std::aligned_storage_t<sizeof(type), alignof(type)> _storage;
+    alignas(alignof(T)) uint8_t _storage[sizeof(T)];
+    ref32_t _weak_refs{ 0 };
+    ref32_t _hard_refs{ 0 };
 };
 
 }} // namespace aer::mem
