@@ -1,99 +1,22 @@
 #pragma once
 
-#include <concepts>
-#include <filesystem>
-#include <ios>
+#include <typeinfo>
 
-#include "memory/Allocator.h"
-#include "memory/ref_counter.h"
+#include "type_name.h"
+#include "visitor.h"
 
-#include "memory/ref_ptr.h"
+namespace aer {
 
-namespace aer
+struct Object
 {
-    
-class Object
-{
-public:
-    static void* operator new( size_t size )  { return mem::alloc( size ); }
-    static void  operator delete( void* ptr ) { mem::dealloc( ptr ); }
+    constexpr auto& type_info(  this auto&& self ) noexcept { return typeid( self ); }
+    constexpr auto  type_size(  this auto&& self ) noexcept { return sizeof( self ); }
+    constexpr auto  type_name(  this auto&& self ) noexcept { return aer::type_name( self ); }
 
-    template< typename Self > constexpr
-    auto& type_info( this Self&& ) noexcept { return typeid( Self ); }
-
-    template< typename Self > constexpr
-    auto type_size( this Self&& ) noexcept { return sizeof( Self ); }
-
-    template< typename Self > constexpr
-    auto type_name( this Self&& ) noexcept { return aer::type_name< Self >(); }
-
-    template< typename Self > constexpr
-    bool is_compatible( this Self&&, const std::type_info& type ) noexcept { return typeid( Self ) == type; }
-
-    template< typename Self, typename V > constexpr
-    void accept( this Self&& self, V& visitor ) { visitor.visit( self ); }
-
-    template< typename Self > constexpr
-    bool write ( this Self&& self, std::string& path )
-    {
-        std::ofstream file( path, std::ios::binary );
-        AE_WARN_IF( !file.is_open(), "Failed to open file: %s", path.c_str() );
-        if( !file.is_open() ) return false;
-
-        file.write( reinterpret_cast<const char*>( self ), sizeof( Self ) );
-        file.close();
-
-        return true;
-    }
-
-    inline auto ref_count( std::memory_order order = std::memory_order_relaxed ) const noexcept
-    { 
-        return _references.load(); 
-    }
-protected:
-    template< typename T, typename... Args >
-    static inline auto create( Args&&... args )
-    {
-        return ref_ptr<T>( new T( std::forward<Args>( args )... ) );
-    }
-
-    template< typename T >
-    static inline auto read( const std::string& path )
-    {
-        std::ifstream file( path, std::ios::ate | std::ios::binary );
-        AE_FATAL_IF( !file.is_open(), "Failed to open file: %s", path.c_str() );
-
-        std::size_t         size( file.tellg() );
-        std::vector<char>   buffer( size );
-
-        file.seekg( 0 );
-        file.read( buffer.data(), size );
-        file.close();
-
-        return ref_ptr<T>( new T( buffer ) );
-    }
-    
-    explicit Object() noexcept : _references( 0 ) {}
-    virtual ~Object() noexcept       = default;
-             Object( Object&& )      = delete;
-             Object( const Object& ) = delete;
-
-    inline void _ref( std::memory_order order = std::memory_order_relaxed ) const noexcept
-    { 
-        _references.increment();
-    }
-
-    inline void _unref( std::memory_order order = std::memory_order_seq_cst ) const noexcept 
-    { 
-        if( _references.decrement() ) delete this;
-    }
-
-protected:
-    template< typename T >
-    friend class ref_ptr;
-    
-private:
-    mutable mem::ref32_t _references;
+    template< std::derived_from<Visitor> V > constexpr
+    void accept( this auto&& self, V& visitor ) noexcept { visitor.apply( self ); }
 };
+TYPE_NAME( aer::Object );
 
 } // namespace aer
+

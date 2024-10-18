@@ -51,8 +51,7 @@ struct managed_object
 protected:
     const void dispose() const noexcept { get()->~type(); }
 private:
-    //typename std::aligned_storage_t<sizeof(type), alignof(type)> _storage;
-    alignas(alignof(T)) uint8_t _storage[sizeof(T)];
+    alignas(alignof(T)) std::byte _storage[sizeof(T)];
     ref32_t _weak_refs{ 0 };
     ref32_t _hard_refs{ 0 };
 };

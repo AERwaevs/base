@@ -1,17 +1,20 @@
 #pragma once
 
-#include "object.h"
-
 namespace aer {
 
-struct Visitor : public Object
+template< typename Self, typename T > 
+concept accepts = requires ( Self self, T t )
 {
-    Visitor()                 = default;
-    Visitor( const Visitor& ) = default;
-    ~Visitor()                = default;
+    { t.accept( self ) };
+};
 
-    template< typename Self >
-    void visit( this Self&& self, Object& object ) { object.accept( self ); }
+struct Visitor
+{
+    template< typename T = void > constexpr
+    void apply( T& obj ) {}
+
+    template< typename Self, accepts<Self> T > constexpr
+    void apply( this Self&& self, T&& obj ) { obj.accept( self ); }
 };
 
 } // namespace aer

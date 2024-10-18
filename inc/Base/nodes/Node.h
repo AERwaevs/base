@@ -13,8 +13,10 @@ struct Node : public Object
     static void* operator new( size_t count ) { return mem::alloc( count, mem::ALLOCATOR_AFFINITY_NODES ); }
     static void  operator delete( void* ptr ) { mem::dealloc( ptr, mem::ALLOCATOR_AFFINITY_NODES ); }
     
-    template< typename Self, typename Visitor > constexpr
-    void traverse( this Self&& self, Visitor& visitor ) {};
+    constexpr void traverse( Visitor& v ) noexcept {}
+
+    template< typename Self, std::derived_from<Visitor> V > constexpr
+    void traverse( this Self&& self, V& visitor ) {};
 };
 
 } // namespace aer

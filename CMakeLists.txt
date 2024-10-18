@@ -89,6 +89,8 @@ set( LOGURU_SRC
 )
 
 add_library( base STATIC ${HEADERS} ${SOURCES} ${LOGURU_SRC} )
+add_library( aer::base ALIAS base )
+
 target_precompile_headers(  base PUBLIC ${STD_HEADERS} )
 target_compile_features(    base PUBLIC cxx_std_23 )
 target_include_directories( base 
@@ -99,4 +101,7 @@ target_include_directories( base
         $<BUILD_INTERFACE:${BASE_LIB}>
 )
 
-add_library( aer::base ALIAS base )
+if( BUILD_TESTING )
+    add_subdirectory( ${BASE_LIB}/catch )
+    add_subdirectory( tests )
+endif()

@@ -1,6 +1,9 @@
 #pragma once
 
+#include <vector>
+
 #include "node.h"
+#include "memory/ref_ptr.h"
 
 namespace aer {
 
