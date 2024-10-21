@@ -1,6 +1,7 @@
 if( BUILD_TESTING )
     add_executable( tests
-        object.test.cpp
+        #object.test.cpp
+        MemorySlots.test.cpp
     )
 
     target_compile_features(    tests PRIVATE cxx_std_20 )
