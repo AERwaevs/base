@@ -72,26 +72,22 @@ bool MemorySlots::release( offset_t offset, size_t size )
 
     auto slotStart = offset;
     auto slotEnd   = offset + size;
-    
-    // merge with next slot if adjacent
-    auto nextItr = _offsetSizes.upper_bound( offset );
-    if( nextItr != _offsetSizes.end() && nextItr->first == slotEnd )
+
+    // remove any adjacent slots
+    auto prevItr = _offsetSizes.lower_bound( offset );
+    if( prevItr != _offsetSizes.begin() )
     {
-        slotEnd = nextItr->first + nextItr->second;
-        remove( nextItr->first, nextItr->second );
-    }
-    
-    // merge with previous slot if adjacent
-    auto prevItr = nextItr != _offsetSizes.end() ? std::prev( nextItr ) : _offsetSizes.end();
-    auto prevSlotEnd = prevItr->first + prevItr->second;
-    if( prevSlotEnd == slotStart )
-    {
-        slotStart = prevItr->first;
-        remove( prevItr->first, prevItr->second );
+        --prevItr;
+        if( prevItr->first + prevItr->second == offset )
+        {
+            slotStart = prevItr->first;
+            size += prevItr->second;
+            _offsetSizes.erase( prevItr );
+        }
     }
 
     // insert the merged slot back into the available memory
-    insert( slotStart, slotEnd - slotStart );
+    insert( slotStart, size );
     return true;
 }
 
