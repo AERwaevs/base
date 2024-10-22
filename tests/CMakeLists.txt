@@ -1,6 +1,8 @@
 if( BUILD_TESTING )
+    
     add_executable( tests
-        #object.test.cpp
+        ref_counter.test.cpp
+        object.test.cpp
         MemorySlots.test.cpp
     )
 

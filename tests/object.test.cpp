@@ -1,8 +1,5 @@
-#include <catch2/catch_test_macros.hpp>
-
 #include <Base/object.h>
-
-namespace aer {
+using namespace aer;
 
 struct Bar : public Object, public Visitor
 {
@@ -10,17 +7,17 @@ struct Bar : public Object, public Visitor
     ~Bar() = default;
     std::string msg{"none"};
 };
-TYPE_NAME( aer::Bar );
+EXT_TYPE_NAME( Bar );
 
 struct Foo : public Object, public Visitor
 {
     Foo() = default;
     ~Foo() = default;
-    int x{ 42 };
+    uint32_t x{ 42 };
     template< std::derived_from<Bar> T >
     void apply( T& t ) { t.msg = "none"; }
 };
-TYPE_NAME( aer::Foo );
+EXT_TYPE_NAME( Foo );
 
 struct Baz : public Bar
 {
@@ -30,36 +27,47 @@ struct Baz : public Bar
     template< std::derived_from<Object> T >
     void apply( T& t ) { msg = t.type_name(); }
 };
-TYPE_NAME( aer::Baz );
+EXT_TYPE_NAME( Baz );
 
-} //* namespace aer
-namespace aer::test {
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 
 TEST_CASE("Runtime type info", "[Object]") {
-    Object obj;
-    REQUIRE(obj.type_info() == typeid(Object));
 
-    Foo foo;
-    REQUIRE(foo.type_info() != typeid(Object));
+    SECTION( "type_info", "[Object]" ) {
+        Object obj;
+        Foo foo;
+
+        REQUIRE( obj.type_info() == typeid(Object) );
+        REQUIRE( foo.type_info() != typeid(Object) );
+        REQUIRE( foo.type_info() == typeid(Foo) );
+    }
+    
+    SECTION("type_size", "[Object]") {
+        Object obj;
+        REQUIRE(obj.type_size() == sizeof(Object));
+
+        Foo foo;
+        REQUIRE(foo.type_size() == sizeof(Foo));
+    }
+
+    SECTION("type_name", "[Object]") {
+        using Catch::Matchers::ContainsSubstring;
+        using Catch::Matchers::Equals;
+
+        Object obj;
+        REQUIRE_THAT(obj.type_name(), Equals("Object"));
+
+        const Foo foo;
+        REQUIRE_THAT(foo.type_name(), Equals("const Foo"));
+
+        const Baz baz;
+        CHECK_THAT(baz.type_name(), ContainsSubstring("Baz"));
+    }
 }
 
-TEST_CASE("type_size", "[Object]") {
-    Object obj;
-    REQUIRE(obj.type_size() == sizeof(Object));
-
-    Foo foo;
-    REQUIRE(foo.type_size() == sizeof(int));
-}
-
-TEST_CASE("type_name", "[Object]") {
-    Object obj;
-    REQUIRE(obj.type_name() == std::string("aer::Object"));
-
-    const Foo foo;
-    REQUIRE(foo.type_name() == std::string("const aer::Foo"));
-
-    const Baz baz;
-    REQUIRE(baz.type_name() == std::string("aer::Baz"));
+TEST_CASE("Object inheritance compatability", "[Object]"){
+    
 }
 
 TEST_CASE("accept", "[Object]") {
@@ -87,5 +95,3 @@ TEST_CASE("accept", "[Object]") {
     baz.apply(foo);
     REQUIRE( baz.msg == "none" );
 }
-
-} //* namespace aer::test

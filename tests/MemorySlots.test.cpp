@@ -80,14 +80,27 @@ TEST_CASE("MemorySlots: Data Locality", "[MemorySlots]") {
         REQUIRE(offset2.has_value());
         REQUIRE(*offset2 == size);
 
-        auto numObjects = 2;
-        auto offset3 = memorySlots.reserve(size * 2);
+        memorySlots.release(*offset1, size);
+        auto offset3 = memorySlots.reserve(size);
         REQUIRE(offset3.has_value());
-        REQUIRE(*offset3 == size * numObjects); // Check data locality
+        REQUIRE(*offset3 == *offset1); // Check data locality
+    }
+
+    SECTION("Reserve and release memory to check if adjacent slots become merged")
+    {
+        auto offset1 = memorySlots.reserve(size);
+        REQUIRE(offset1.has_value());
+        REQUIRE(*offset1 == 0);
+
+        auto offset2 = memorySlots.reserve(size);
+        REQUIRE(offset2.has_value());
+        REQUIRE(*offset2 == size);
 
         memorySlots.release(*offset1, size);
-        auto offset4 = memorySlots.reserve(size);
-        REQUIRE(offset4.has_value());
-        REQUIRE(*offset4 == *offset1); // Check data locality
+        memorySlots.release(*offset2, size);
+
+        auto offset3 = memorySlots.reserve(size * 2);
+        REQUIRE(offset3.has_value());
+        REQUIRE(*offset3 == 0); // Check if adjacent slots become merged
     }
 }
