@@ -16,6 +16,10 @@ enum class eject_action : uint8_t
     destroy
 };
 
+constexpr inline eject_action eject_leave   = eject_action::nothing;
+constexpr inline eject_action eject_defer   = eject_action::defer;
+constexpr inline eject_action eject_destroy = eject_action::destroy;
+
 template< std::destructible T >
 struct managed_object
 {
