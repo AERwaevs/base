@@ -68,6 +68,7 @@ set( HEADERS
     ${BASE_INC}/Base/memory/manager_base.h
     ${BASE_INC}/Base/memory/managed_object.h
     ${BASE_INC}/Base/memory/scratch_memory.h
+    ${BASE_INC}/Base/memory/ptr.h
     ${BASE_INC}/Base/memory/base_ptr.h
     ${BASE_INC}/Base/memory/ref_ptr.h
     ${BASE_INC}/Base/memory/spy_ptr.h
