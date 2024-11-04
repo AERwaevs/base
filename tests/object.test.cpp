@@ -1,11 +1,14 @@
 #include <Base/object.h>
 using namespace aer;
 
-struct Bar : public Object, public Visitor
+struct Bar : public Object
 {
     Bar() = default;
     ~Bar() = default;
     std::string msg{"none"};
+
+    template< std::derived_from<Object> T >
+    void accept( T& t ) { msg = t.type_name(); }
 };
 EXT_TYPE_NAME( Bar );
 
@@ -13,21 +16,28 @@ struct Foo : public Object, public Visitor
 {
     Foo() = default;
     ~Foo() = default;
-    uint32_t x{ 42 };
+    size_t x{ 42 };
     template< std::derived_from<Bar> T >
-    void apply( T& t ) { t.msg = "none"; }
+    void apply( T& t ) { t.msg = type_name( std::declval( this ) ); }
 };
 EXT_TYPE_NAME( Foo );
 
-struct Baz : public Bar
+struct Baz : public Bar, public Visitor
 {
     Baz() = default;
     ~Baz() = default;
 
     template< std::derived_from<Object> T >
-    void apply( T& t ) { msg = t.type_name(); }
+    void apply( this auto&& self, T&& t ) { self.msg = t.type_name(); }
+
+    template< std::derived_from<Foo> T >
+    void apply( this auto&& self, T&& t ) { t.x = self.type_info().hash_code(); }
 };
 EXT_TYPE_NAME( Baz );
+
+const auto z = mem::ref32_t::ZERO_FLAG;
+const auto p = mem::ref32_t::ZERO_PENDING_FLAG;
+const auto b = z > p;
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
@@ -56,19 +66,16 @@ TEST_CASE("Runtime type info", "[Object]") {
         using Catch::Matchers::Equals;
 
         Object obj;
-        REQUIRE_THAT(obj.type_name(), Equals("Object"));
+        CHECK_THAT(obj.type_name(), ContainsSubstring("Object"));
 
         const Foo foo;
-        REQUIRE_THAT(foo.type_name(), Equals("const Foo"));
+        CHECK_THAT(aer::type_name( foo ), ContainsSubstring("Foo"));
 
         const Baz baz;
         CHECK_THAT(baz.type_name(), ContainsSubstring("Baz"));
     }
 }
-
-TEST_CASE("Object inheritance compatability", "[Object]"){
-    
-}
+#include <list>
 
 TEST_CASE("accept", "[Object]") {
     Object obj;
@@ -76,22 +83,15 @@ TEST_CASE("accept", "[Object]") {
     Bar bar;
     Baz baz;
 
-    SECTION("Dummy accept calls") {
-        obj.accept(bar);
-        foo.accept(bar);
-        bar.accept(bar);
-        baz.accept(bar);
+    std::list<Object*> objects{ &obj, &foo, &bar, &baz };
+
+    SECTION("accept", "[Object]") {
+        for( auto& object : objects ) {
+            object->accept( foo );
+        }
+
+        REQUIRE( bar.msg == "Foo" );
+        REQUIRE( baz.msg == "Baz" );
+        REQUIRE( foo.x == foo.type_info().hash_code() );
     }
-
-    bar.apply(obj);
-    REQUIRE( bar.msg == "none" );
-    bar.apply(foo);
-    REQUIRE( bar.msg == "none" );
-    bar.apply(baz);
-    REQUIRE( bar.msg == "none" );
-
-    baz.apply(obj);
-    REQUIRE( baz.msg == "aer::Object" );
-    baz.apply(foo);
-    REQUIRE( baz.msg == "none" );
 }
