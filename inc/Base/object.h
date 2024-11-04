@@ -12,22 +12,17 @@ namespace aer {
 
 struct Object
 {
+    explicit Object()                noexcept = default;
+             Object( const Object& ) noexcept = delete;
+             Object( Object&& )      noexcept = delete;
+            ~Object() noexcept                = default;
+
     void* operator new( size_t size )  { return mem::alloc( size ); }
     void  operator delete( void* ptr ) { mem::dealloc( ptr ); }
 
     constexpr auto& type_info( this auto&& self ) noexcept { return typeid( self ); }
     constexpr auto  type_size( this auto&& self ) noexcept { return sizeof( self ); }
     constexpr auto  type_name( this auto&& self ) noexcept { return aer::type_name( self ); }
-
-    template< typename Self, typename T >
-    constexpr auto  compatible( this Self&&, const T& ) noexcept { return typeid(Self) == typeid(T) || std::derived_from<T, Self>; }
-    template< typename Self >
-    constexpr auto  compatible( this Self&& self, const std::type_info& type ) noexcept { return typeid(Self) == type || self.compatible( type ); }
-
-    explicit Object()                noexcept = default;
-             Object( const Object& ) noexcept = delete;
-             Object( Object&& )      noexcept = delete;
-            ~Object() noexcept                = default;
 
     auto              weak_refs()  const noexcept { return _weak_refs.load(); }
     auto              hard_refs()  const noexcept { return _hard_refs.load(); }
@@ -42,8 +37,7 @@ struct Object
         else delete this; return mem::eject_destroy;
     }
 
-    template< std::derived_from<Visitor> V > constexpr
-    void accept( this auto&& self, V& visitor ) noexcept { visitor.apply( self ); }
+    constexpr void accept( this auto&& self, std::derived_from<Visitor> auto& visitor ) noexcept {}
 
 private:
     mem::ref32_t _weak_refs{ 0 };

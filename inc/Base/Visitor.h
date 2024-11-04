@@ -14,7 +14,7 @@ struct Visitor
     void apply( T& obj ) {}
 
     template< typename Self, accepts<Self> T > constexpr
-    void apply( this Self&& self, T&& obj ) { obj.accept( self ); }
+    void apply( this Self&& self, T&& obj ) { self.apply( obj ); }
 };
 
 } // namespace aer
