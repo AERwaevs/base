@@ -70,11 +70,8 @@ struct atomic_reference_counter
         _count.store( desired == 0 ? ZERO_FLAG : desired, order );
     }
 
-    explicit operator T()   const noexcept { return load(); }
-        bool operator ++ () const noexcept { return increment(); }
-        bool operator -- () const noexcept { return decrement(); }
+    explicit operator T()        const noexcept { return load(); }
 
-private:
     enum : T
     {
         ZERO_FLAG           = ( 1u << ( sizeof(T) * 8u - 1u ) ),
