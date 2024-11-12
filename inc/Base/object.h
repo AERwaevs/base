@@ -3,11 +3,15 @@
 #include <concepts>
 #include <filesystem>
 #include <ios>
+#include <fstream>
 
 #include "memory/Allocator.h"
 #include "memory/ref_counter.h"
 
 #include "memory/ref_ptr.h"
+
+#include "type_name.h"
+#include "log.h"
 
 namespace aer
 {
@@ -51,11 +55,11 @@ public:
         return _references.load(); 
     }
 protected:
-    template< typename T, typename... Args >
-    static inline auto create( Args&&... args )
-    {
-        return ref_ptr<T>( new T( std::forward<Args>( args )... ) );
-    }
+    //template< typename T, typename... Args >
+    //static inline auto create( Args&&... args )
+    //{
+    //    return ref_ptr<T>( new T( std::forward<Args>( args )... ) );
+    //}
 
     template< typename T >
     static inline auto read( const std::string& path )
@@ -95,6 +99,9 @@ protected:
 private:
     mutable mem::ref_counter< uint32_t > _references;
 };
+
+template< std::derived_from<Object> T, typename... Args > 
+constexpr ref_ptr<T> create( Args&&... args );
 
 template< std::derived_from<Object> T, typename... Args > requires( std::constructible_from<T, Args...> )
 constexpr inline auto create( Args&&... args )
