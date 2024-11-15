@@ -26,8 +26,8 @@ public:
     spy_ptr( const spy_ptr& rhs )             : ptr( rhs.ptr )   {}
     ~spy_ptr()                                                   {}
 
-    template< class R >
-    explicit spy_ptr( R* rhs )                : ptr( rhs )       {}
+    explicit spy_ptr( T* rhs )                : ptr( rhs )       {}
+    explicit spy_ptr( std::convertible_to<T> auto* rhs )                : ptr( rhs )       {}
 
     template< class R >
     explicit spy_ptr( const spy_ptr<R>& rhs ) : ptr( rhs.ptr )   {}
@@ -47,7 +47,7 @@ public:
     template< class R = T > requires std::derived_from< R, Object >
     explicit operator ref_ptr<R>() const noexcept { return valid() ? ref_ptr<R>( ptr ) : ref_ptr<R>(); }
 
-    template< class R = T > requires std::derived_from< R, Object >
+    template< std::convertible_to<T> R = T >
     ref_ptr<R> load() const { return ref_ptr<R>( ptr ); }
 
 protected:
