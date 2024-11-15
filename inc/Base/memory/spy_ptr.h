@@ -22,18 +22,10 @@ class spy_ptr
 public:
     using type = T;
 
-    spy_ptr()                                 : ptr( nullptr )   {}
-    spy_ptr( const spy_ptr& rhs )             : ptr( rhs.ptr )   {}
-    ~spy_ptr()                                                   {}
-
-    explicit spy_ptr( T* rhs )                : ptr( rhs )       {}
-    explicit spy_ptr( std::convertible_to<T> auto* rhs )                : ptr( rhs )       {}
-
-    template< class R >
-    explicit spy_ptr( const spy_ptr<R>& rhs ) : ptr( rhs.ptr )   {}
-
-    template< class R >
-    explicit spy_ptr( const ref_ptr<R>& rhs ) : ptr( rhs.get() ) {}
+    spy_ptr()                     = default;
+    spy_ptr( const spy_ptr& rhs ) = default;
+    spy_ptr( T* rhs ) : ptr( rhs ) {}
+    ~spy_ptr()                    = default;
 
     auto operator <=> ( const spy_ptr& ) const = default;
 
