@@ -44,10 +44,10 @@ public:
 
     explicit operator bool() const noexcept { return valid(); }
 
-    template< class R = T > requires std::derived_from< R, Object >
+    template< typename R = T >
     explicit operator ref_ptr<R>() const noexcept { return valid() ? ref_ptr<R>( ptr ) : ref_ptr<R>(); }
 
-    template< std::convertible_to<T> R = T >
+    template< typename R = T >
     ref_ptr<R> load() const { return ref_ptr<R>( ptr ); }
 
 protected:
