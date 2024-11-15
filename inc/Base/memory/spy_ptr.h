@@ -22,18 +22,10 @@ class spy_ptr
 public:
     using type = T;
 
-    spy_ptr()                                 : ptr( nullptr )   {}
-    spy_ptr( const spy_ptr& rhs )             : ptr( rhs.ptr )   {}
-    ~spy_ptr()                                                   {}
-
-    template< class R >
-    explicit spy_ptr( R* rhs )                : ptr( rhs )       {}
-
-    template< class R >
-    explicit spy_ptr( const spy_ptr<R>& rhs ) : ptr( rhs.ptr )   {}
-
-    template< class R >
-    explicit spy_ptr( const ref_ptr<R>& rhs ) : ptr( rhs.get() ) {}
+    spy_ptr()                     = default;
+    spy_ptr( const spy_ptr& rhs ) = default;
+    spy_ptr( T* rhs ) : ptr( rhs ) {}
+    ~spy_ptr()                    = default;
 
     auto operator <=> ( const spy_ptr& ) const = default;
 
@@ -44,10 +36,10 @@ public:
 
     explicit operator bool() const noexcept { return valid(); }
 
-    template< class R = T > requires std::derived_from< R, Object >
+    template< typename R = T >
     explicit operator ref_ptr<R>() const noexcept { return valid() ? ref_ptr<R>( ptr ) : ref_ptr<R>(); }
 
-    template< class R = T > requires std::derived_from< R, Object >
+    template< typename R = T >
     ref_ptr<R> load() const { return ref_ptr<R>( ptr ); }
 
 protected:
