@@ -71,7 +71,7 @@ protected:
         return ref_ptr<T>( new T( buffer ) );
     }
     
-    explicit Object() noexcept : _references( 0 ) {}
+             Object() noexcept = default;
     virtual ~Object() noexcept       = default;
              Object( Object&& )      = delete;
              Object( const Object& ) = delete;
@@ -94,9 +94,8 @@ private:
     mutable mem::ref_counter< uint32_t > _references;
 };
 
-template< std::derived_from<Object> T, typename... Args >
-requires( std::constructible_from<T, Args...> )
-constexpr inline ref_ptr<T> create( Args&&... args )
+template< std::derived_from<Object> T, typename... Args > requires( std::constructible_from<T, Args...> )
+constexpr inline ref_ptr<T> create( Args&&... args ) noexcept
 {
     return ref_ptr{ new T(std::forward<Args>( args )...) };
 };

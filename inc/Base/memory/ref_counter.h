@@ -73,16 +73,16 @@ private:
         ZERO_PENDING_FLAG   = ( 1u << ( sizeof(T) * 8u - 2u ) )
     };
 
-#if ( true ) // raw memory view for debugging purposes
+#if ( false ) // raw memory view for debugging purposes
     mutable struct
     {
-        int     value : sizeof(T) * 8u - 2u;
-        bool    zero  : 1;
-        bool    pending_zero : 1;
+        int     value : sizeof(T) * 8u - 2u = 1;
+        bool    zero  : 1 = 0;
+        bool    pending_zero : 1 = 0;
     };
     struct
     {
-        mutable std::atomic<T> _count;
+        mutable std::atomic<T> _count = 1;
     };
 #else
     mutable std::atomic<T> _count;
