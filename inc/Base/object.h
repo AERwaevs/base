@@ -55,12 +55,6 @@ public:
         return _references.load(); 
     }
 protected:
-    //template< typename T, typename... Args >
-    //static inline auto create( Args&&... args )
-    //{
-    //    return ref_ptr<T>( new T( std::forward<Args>( args )... ) );
-    //}
-
     template< typename T >
     static inline auto read( const std::string& path )
     {
