@@ -1,16 +1,12 @@
 #pragma once
 
-#include <algorithm>
-
 #include "../object.h"
 #include "ref_ptr.h"
-
-#include "../interfaces/create.h"
 
 namespace aer
 {
     
-struct scratch_memory : public inherit<scratch_memory, Object>
+struct scratch_memory : public Object
 {
     uint8_t* buffer = nullptr;
     uint8_t* ptr    = nullptr;
@@ -44,7 +40,7 @@ struct scratch_memory : public inherit<scratch_memory, Object>
             return allocated_ptr;
         }
 
-        if( !next ) next = scratch_memory::create( std::max( size, allocate_size ) );
+        if( !next ) next = create<scratch_memory>( std::max( size, allocate_size ) );
         return next->allocate<T>( num );
     }
 
