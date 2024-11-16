@@ -19,25 +19,31 @@ namespace aer
 {
 
 template< typename T >
-struct ref_ptr : public mem::base_ptr< std::add_pointer_t<T> >
+struct ref_ptr : public mem::base_ptr<T>
 {
-    using element_type = std::remove_extent_t<T>;
-    
-    using Base = mem::base_ptr<std::add_pointer_t<T>>;
+    using Base = mem::base_ptr<T>;
     using Base::ptr;
 
-                ref_ptr()                       noexcept : Base() {}    
-                ref_ptr( const ref_ptr& rhs )   noexcept : Base( rhs ) { if( ptr ) ptr->_ref(); }
-    explicit    ref_ptr( T* rhs )               noexcept : Base( rhs ) { if( ptr ) ptr->_ref(); }
-                ~ref_ptr()                      noexcept               { if( ptr ) ptr->_unref(); }
+             ref_ptr()                     noexcept : Base() {}    
+             ref_ptr( const ref_ptr& rhs ) noexcept : Base( rhs ) { if( ptr ) ptr->_ref(); }
+    explicit ref_ptr( T* rhs )             noexcept : Base( rhs ) { if( ptr ) ptr->_ref(); }
+            ~ref_ptr()                     noexcept               { if( ptr ) ptr->_unref(); }
 
-    template< class R >
-                ref_ptr( ref_ptr<R>&& rhs )      noexcept : Base( rhs ) { rhs.ptr = nullptr; }
-    template< class R >
-                ref_ptr( const ref_ptr<R>& rhs ) noexcept : Base( rhs ) { if( ptr ) ptr->_ref(); }
-    template< class R >
-    explicit    ref_ptr( R* rhs )                noexcept : Base( rhs ) { if( ptr ) ptr->_ref(); }
-
+    template< typename R > requires( std::derived_from<T, R> )
+    operator ref_ptr<R>() const noexcept { return ref_ptr( ptr ); }
+    
+    ref_ptr& operator = ( const ref_ptr& rhs )
+    {
+        if( ptr != rhs.ptr )
+        {
+            T*  tmp_ptr = ptr;
+                ptr     = rhs.ptr;
+            if( ptr )     ptr->_ref();
+            if( tmp_ptr ) tmp_ptr->_unref();
+        }
+        return *this;
+    }
+    
     ref_ptr& operator = ( T* rhs )
     {
         if( ptr != rhs )
@@ -50,19 +56,7 @@ struct ref_ptr : public mem::base_ptr< std::add_pointer_t<T> >
         return *this;
     }
 
-    ref_ptr& operator = ( const ref_ptr& rhs )
-    {
-        if( ptr != rhs.ptr )
-        {
-            T*  tmp_ptr = ptr;
-                ptr     = rhs.ptr;
-            if( ptr )     ptr->_ref();
-            if( tmp_ptr ) tmp_ptr->_unref();
-        }
-        return *this;
-    }
-
-    template< class R >
+    template< typename R > requires( std::derived_from<T, R> )
     ref_ptr& operator = ( const ref_ptr<R>& rhs )
     {
         if( ptr != rhs.ptr )
@@ -75,7 +69,7 @@ struct ref_ptr : public mem::base_ptr< std::add_pointer_t<T> >
         return *this;
     }
 
-    template< class R >
+    template< typename R > requires( std::derived_from<T, R> )
     ref_ptr& operator = ( ref_ptr<R>&& rhs )
     {
         if( ptr != rhs.ptr )
@@ -88,8 +82,7 @@ struct ref_ptr : public mem::base_ptr< std::add_pointer_t<T> >
     }
     
 protected:
-    template< class R >
-    friend class ref_ptr;
+    friend ref_ptr;
 };
 
 } // namespace aer
