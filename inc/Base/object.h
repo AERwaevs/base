@@ -100,20 +100,11 @@ private:
     mutable mem::ref_counter< uint32_t > _references;
 };
 
-template< typename T, typename... Args >
-constexpr pointer_to<T> auto create( Args&&... args );
-
 template< std::derived_from<Object> T, typename... Args >
 requires( std::constructible_from<T, Args...> )
-constexpr inline pointer_to<T> auto create( Args&&... args )
+constexpr inline ref_ptr<T> create( Args&&... args )
 {
     return ref_ptr{ new T(std::forward<Args>( args )...) };
 };
-
-//template< std::derived_from<Object> T, typename... Args > requires( std::constructible_from<T, Args...> )
-//constexpr inline auto create( Args&&... args )
-//{
-//    return ref_ptr{ new T(std::forward<Args>( args )...) };
-//};
 
 } // namespace aer
