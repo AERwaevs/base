@@ -27,36 +27,31 @@ namespace mem
     
 #if BASE_PTR_VERSION == 1
 
-template< typename Ptr >
-requires std::is_pointer_v<Ptr>
+template< typename T >
 struct base_ptr
 {
     using type = std::remove_extent_t<T>;
 
-                base_ptr()                      noexcept : ptr( nullptr ) {}
-                base_ptr( const base_ptr& rhs ) noexcept : ptr( rhs.ptr ) {}
-    explicit    base_ptr( Ptr rhs )             noexcept : ptr( rhs )     {}
-                ~base_ptr()                                               {}
+             base_ptr()                      noexcept : ptr( nullptr ) {}
+             base_ptr( std::nullptr_t )      noexcept : ptr( nullptr ) {}
+             base_ptr( const base_ptr& rhs ) noexcept : ptr( rhs.ptr ) {}
+    explicit base_ptr( type* rhs )           noexcept : ptr( rhs )     {}
+            ~base_ptr()                                                {}
     
-    template< class R >
-    auto        operator <=>    ( const R* rhs )    const noexcept { return ( ptr <=> rhs ); };
-    auto        operator <=>    ( const base_ptr& ) const = default;
-    explicit    operator bool   ()                  const noexcept { return ( ptr != nullptr ); }
-                operator type*  ()                  const noexcept { return   ptr; }
-    type*       operator ->     ()                  const noexcept { return   ptr; }
-    type&       operator *      ()                  const noexcept { return  *ptr; }
-    Ptr         get()                               const noexcept { return   ptr; }
-    Ptr&        get()                                     noexcept { return   ptr; }
-    void        operator []     ( int )             const = delete;
+    void     operator []    ( int ) const = delete;
+    auto     operator *     ( this auto& self ) noexcept { return *self.ptr; }
+    auto     operator ->    ( this auto& self ) noexcept { return self.ptr; }
+    explicit operator bool  ( this auto& self ) noexcept { return self.valid(); }
+    auto     operator <=>   ( const base_ptr& ) const = default;
+    auto     operator <=>   ( const pointer auto rhs ) const noexcept { return (ptr <=> rhs); };
+    auto     operator <=>   ( const std::derived_from<base_ptr> auto rhs ) const noexcept { return (ptr <=> rhs.ptr); };
 
-    //[[nodiscard]]
-    //bool        is_protected()                      const          { return true; }
-    bool        valid()                             const noexcept { return ( ptr != nullptr ); }
-    //void        clear()                                   noexcept { ptr = nullptr; }
-    void        swap( base_ptr& other )                            { std::swap( ptr, other.ptr ); }
+    auto     get()                              const noexcept { return ptr; }
+    bool     valid()                            const noexcept { return (ptr != nullptr); }
+    void     swap( base_ptr& other )            const noexcept { std::swap( ptr, other.ptr ); }
 
 protected:
-    Ptr ptr = nullptr;
+    std::add_pointer_t<type> ptr = nullptr;
 };
 
 #elif BASE_PTR_VERSION == 2

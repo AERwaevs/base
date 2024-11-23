@@ -12,7 +12,7 @@ struct scratch_memory : public Object
     uint8_t* ptr    = nullptr;
     size_t   size   = 0;
 
-    scratch_memory* next;
+    ref_ptr<scratch_memory> next;
 
     explicit scratch_memory( size_t in_size ) : buffer( new uint8_t[in_size] ), ptr( buffer ), size( in_size ) {};
             ~scratch_memory() { delete[] buffer; }
