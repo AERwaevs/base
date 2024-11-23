@@ -81,13 +81,16 @@ private:
         ZERO_PENDING_FLAG   = ( 1u << ( sizeof(T) * 8u - 2u ) )
     };
 
-#ifndef NDEBUG // raw memory view for debugging purposes
-    union
+#if ( false ) // raw memory view for debugging purposes
+    mutable struct
     {
-        mutable std::atomic<T> _count;
-        mutable int            value : sizeof(T) * 8u - 2u;
-        mutable bool           zero  : 1;
-        mutable bool           pending_zero : 1;
+        int     value : sizeof(T) * 8u - 2u = 1;
+        bool    zero  : 1 = 0;
+        bool    pending_zero : 1 = 0;
+    };
+    struct
+    {
+        mutable std::atomic<T> _count = 1;
     };
 #else
     mutable std::atomic<T> _count;

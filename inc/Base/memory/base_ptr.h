@@ -7,6 +7,21 @@
 
 namespace aer
 {
+template< typename T >
+concept pointer = std::is_pointer_v<T>;
+
+template< typename T, typename To >
+concept pointer_to = pointer<T> && std::convertible_to<T, std::add_pointer_t<To>>;
+
+template< typename T >
+concept dereferenceable = requires( T* ptr )
+{
+    { *ptr } -> std::convertible_to<std::add_lvalue_reference_t<std::remove_pointer_t<T>>>;
+};
+
+template< typename T >
+concept protected_pointer = pointer<T> && !dereferenceable<T>;
+
 namespace mem
 {
     
@@ -16,7 +31,7 @@ template< typename Ptr >
 requires std::is_pointer_v<Ptr>
 struct base_ptr
 {
-    using type = std::remove_pointer_t<Ptr>;
+    using type = std::remove_extent_t<T>;
 
                 base_ptr()                      noexcept : ptr( nullptr ) {}
                 base_ptr( const base_ptr& rhs ) noexcept : ptr( rhs.ptr ) {}

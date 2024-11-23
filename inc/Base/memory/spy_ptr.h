@@ -13,48 +13,30 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 </editor-fold> */
 #include <concepts>
 
+#include "base_ptr.h"
+#include "ref_ptr.h"
+
 namespace aer
 {
 
 template< typename T >
-class spy_ptr
+struct spy_ptr : public mem::base_ptr<T>
 {
-public:
-    using type = T;
+    friend spy_ptr;
+    friend ref_ptr<T>;
+    
+    using Base = mem::base_ptr<T>;
+    using Base::ptr;
 
-    spy_ptr()                                 : ptr( nullptr )   {}
-    spy_ptr( const spy_ptr& rhs )             : ptr( rhs.ptr )   {}
-    ~spy_ptr()                                                   {}
+    spy_ptr() noexcept : Base() {}
+    spy_ptr( const spy_ptr& ) noexcept = default;
+    explicit spy_ptr( T* rhs ) noexcept : Base( rhs ) {}
+    ~spy_ptr()                    = default;
 
-    template< class R >
-    explicit spy_ptr( R* rhs )                : ptr( rhs )       {}
+    auto operator *     ( this auto& ) = delete;
+    auto operator ->    ( this auto& ) = delete;
 
-    template< class R >
-    explicit spy_ptr( const spy_ptr<R>& rhs ) : ptr( rhs.ptr )   {}
-
-    template< class R >
-    explicit spy_ptr( const ref_ptr<R>& rhs ) : ptr( rhs.get() ) {}
-
-    auto operator <=> ( const spy_ptr& ) const = default;
-
-    template< class R >
-    auto operator <=> ( const R* rhs )   const { return ( ptr <=> rhs ); };
-
-    bool valid()             const noexcept { return ptr != nullptr; }
-
-    explicit operator bool() const noexcept { return valid(); }
-
-    template< class R = T > requires std::derived_from< R, Object >
-    explicit operator ref_ptr<R>() const noexcept { return valid() ? ref_ptr<R>( ptr ) : ref_ptr<R>(); }
-
-    template< class R = T > requires std::derived_from< R, Object >
-    ref_ptr<R> load() const { return ref_ptr<R>( ptr ); }
-
-protected:
-    template< class R >
-    friend class spy_ptr;
-
-    T* ptr = nullptr;
+    ref_ptr<T> load() const { return ref_ptr<T>( ptr ); }
 };
 
 } // namespace aer
