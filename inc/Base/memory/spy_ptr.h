@@ -13,40 +13,30 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 </editor-fold> */
 #include <concepts>
 
+#include "base_ptr.h"
+#include "ref_ptr.h"
+
 namespace aer
 {
 
 template< typename T >
-class spy_ptr
+struct spy_ptr : public mem::base_ptr<T>
 {
-public:
-    using type = T;
+    friend spy_ptr;
+    friend ref_ptr<T>;
+    
+    using Base = mem::base_ptr<T>;
+    using Base::ptr;
 
-    spy_ptr()                     = default;
-    spy_ptr( const spy_ptr& rhs ) = default;
-    spy_ptr( T* rhs ) : ptr( rhs ) {}
+    spy_ptr() noexcept : Base() {}
+    spy_ptr( const spy_ptr& ) noexcept = default;
+    explicit spy_ptr( T* rhs ) noexcept : Base( rhs ) {}
     ~spy_ptr()                    = default;
 
-    auto operator <=> ( const spy_ptr& ) const = default;
+    auto operator *     ( this auto& ) = delete;
+    auto operator ->    ( this auto& ) = delete;
 
-    template< class R >
-    auto operator <=> ( const R* rhs )   const { return ( ptr <=> rhs ); };
-
-    bool valid()             const noexcept { return ptr != nullptr; }
-
-    explicit operator bool() const noexcept { return valid(); }
-
-    template< typename R = T >
-    explicit operator ref_ptr<R>() const noexcept { return valid() ? ref_ptr<R>( ptr ) : ref_ptr<R>(); }
-
-    template< typename R = T >
-    ref_ptr<R> load() const { return ref_ptr<R>( ptr ); }
-
-protected:
-    template< class R >
-    friend class spy_ptr;
-
-    T* ptr = nullptr;
+    ref_ptr<T> load() const { return ref_ptr<T>( ptr ); }
 };
 
 } // namespace aer

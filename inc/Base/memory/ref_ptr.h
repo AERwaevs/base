@@ -21,8 +21,10 @@ namespace aer
 template< typename T >
 struct ref_ptr : public mem::base_ptr<T>
 {
+    friend ref_ptr;
     using Base = mem::base_ptr<T>;
     using Base::ptr;
+    using Base::Base;
 
              ref_ptr()                     noexcept : Base() {}    
              ref_ptr( const ref_ptr& rhs ) noexcept : Base( rhs ) { if( ptr ) ptr->_ref(); }
@@ -31,6 +33,9 @@ struct ref_ptr : public mem::base_ptr<T>
 
     template< typename R > requires( std::derived_from<T, R> )
     operator ref_ptr<R>() const noexcept { return ref_ptr( ptr ); }
+
+    T&     operator *     ( this auto& self  ) noexcept { return *self.ptr; }
+    T*     operator ->    ( this auto& self  ) noexcept { return self.ptr; }
     
     ref_ptr& operator = ( const ref_ptr& rhs )
     {
@@ -80,9 +85,6 @@ struct ref_ptr : public mem::base_ptr<T>
         }
         return *this;
     }
-    
-protected:
-    friend ref_ptr;
 };
 
 } // namespace aer
