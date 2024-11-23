@@ -78,12 +78,12 @@ protected:
 
     inline void _ref( std::memory_order order = std::memory_order_relaxed ) const noexcept
     { 
-        _references.increment();
+        _references++;
     }
 
     inline void _unref( std::memory_order order = std::memory_order_seq_cst ) const noexcept 
     { 
-        if( _references.decrement() ) delete this;
+        if( _references-- == 0 ) delete this;
     }
 
 protected:
@@ -91,7 +91,7 @@ protected:
     friend class ref_ptr;
     
 private:
-    mutable mem::ref_counter< uint32_t > _references;
+    mutable std::atomic_uint32_t _references;
 };
 
 template< std::derived_from<Object> T, typename... Args > requires( std::constructible_from<T, Args...> )
