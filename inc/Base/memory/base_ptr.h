@@ -11,7 +11,7 @@ template< typename T >
 concept pointer = std::is_pointer_v<T>;
 
 template< typename T, typename To >
-concept pointer_to = pointer<T> && std::convertible_to<T, std::add_pointer_t<To>>;
+concept pointer_to = pointer<T> || std::constructible_from<T, std::add_pointer_t<To>> && std::convertible_to<T, std::add_pointer_t<To>>;
 
 template< typename T >
 concept dereferenceable = requires( T* ptr )
