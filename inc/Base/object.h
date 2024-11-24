@@ -63,7 +63,7 @@ private:
 template< std::derived_from<Object> T, typename... Args > requires( std::constructible_from<T, Args...> )
 constexpr inline ref_ptr<T> create( Args&&... args ) noexcept
 {
-    return ref_ptr{ new T(std::forward<Args>( args )...) };
+    return ref_ptr<T>{ new T(std::forward<Args>( args )...) };
 };
 
 } // namespace aer
