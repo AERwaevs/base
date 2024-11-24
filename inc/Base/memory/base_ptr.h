@@ -30,12 +30,13 @@ namespace mem
 template< typename T >
 struct base_ptr
 {
-    using type = std::remove_extent_t<T>;
+    using element_t = std::remove_extent_t<T>;
+    using pointer_t = std::add_pointer_t<T>;
 
              base_ptr()                      noexcept : ptr( nullptr ) {}
              base_ptr( std::nullptr_t )      noexcept : ptr( nullptr ) {}
              base_ptr( const base_ptr& rhs ) noexcept : ptr( rhs.ptr ) {}
-    explicit base_ptr( type* rhs )           noexcept : ptr( rhs )     {}
+    explicit base_ptr( pointer_t rhs )       noexcept : ptr( rhs )     {}
             ~base_ptr()                                                {}
     
     void     operator []    ( int ) const = delete;
@@ -51,7 +52,7 @@ struct base_ptr
     void     swap( base_ptr& other )            const noexcept { std::swap( ptr, other.ptr ); }
 
 protected:
-    std::add_pointer_t<type> ptr = nullptr;
+    pointer_t ptr = nullptr;
 };
 
 #elif BASE_PTR_VERSION == 2
