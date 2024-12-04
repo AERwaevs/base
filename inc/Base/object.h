@@ -49,7 +49,7 @@ protected:
 
     inline void _unref( std::memory_order order = std::memory_order_seq_cst ) const noexcept 
     { 
-        if( _references-- == 0 ) delete this;
+        if( _references-- == 1 ) delete this;
     }
 
 protected:
