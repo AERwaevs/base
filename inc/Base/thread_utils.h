@@ -35,7 +35,7 @@ struct thread_id_t
             bool expected = false;
             if( !in_use[i] && in_use[i].compare_exchange_strong( expected, true ) ) return i;
         }
-        AE_FATAL( "More than %d threads created", num_threads() );
+        ABORT_F( "More than %d threads created", num_threads() );
     }()){}
 
     ~thread_id_t() { in_use[id].store( false ); }

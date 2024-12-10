@@ -1,6 +1,6 @@
 #include <Base/memory/MemoryBlocks.h>
 #include <Base/memory/Allocator.h>
-#include <Base/log.h>
+#include <loguru.hpp>
 
 namespace aer::mem
 {
@@ -8,12 +8,12 @@ namespace aer::mem
 MemoryBlocks::MemoryBlocks( Allocator* in_parent, size_t in_blockSize )
     : parent( in_parent ), blockSize( in_blockSize )
 {
-    AE_INFO_IF( parent->memoryTracking & MEMORY_TRACKING_REPORT_ACTIONS, "Allocator::MemoryBlocks::MemoryBlocks( %p, %zu ).", parent, blockSize );
+    DLOG_IF_F( INFO, parent->memoryTracking & MEMORY_TRACKING_REPORT_ACTIONS, "Allocator::MemoryBlocks::MemoryBlocks( %p, %zu ).", parent, blockSize );
 }
 
 MemoryBlocks::~MemoryBlocks()
 {
-    AE_INFO_IF( parent->memoryTracking & MEMORY_TRACKING_REPORT_ACTIONS, "Allocator::MemoryBlocks::~MemoryBlocks( %p, %zu ).", parent, blockSize );
+    DLOG_IF_F( INFO, parent->memoryTracking & MEMORY_TRACKING_REPORT_ACTIONS, "Allocator::MemoryBlocks::~MemoryBlocks( %p, %zu ).", parent, blockSize );
 }
 
 void* MemoryBlocks::allocate( size_t size )
@@ -39,7 +39,7 @@ void* MemoryBlocks::allocate( size_t size )
     auto ptr = block->allocate( size );
 
     _blocks[block->_memory] = std::move( block );
-    AE_INFO_IF( parent->memoryTracking & MEMORY_TRACKING_REPORT_ACTIONS, "Allocator::MemoryBlocks::allocate( %zu ) - allocating in new MemoryBlock.", size );
+    DLOG_IF_F( INFO, parent->memoryTracking & MEMORY_TRACKING_REPORT_ACTIONS, "Allocator::MemoryBlocks::allocate( %zu ) - allocating in new MemoryBlock.", size );
     return ptr;
 }
 
@@ -61,7 +61,7 @@ bool MemoryBlocks::deallocate( void* ptr, size_t size )
         if( block->deallocate( ptr, size ) ) return true;
     }
 
-    AE_WARN_IF( parent->memoryTracking & MEMORY_TRACKING_REPORT_ACTIONS, "Allocator::MemoryBlocks::deallocate( %p, %zu ) - could not find pointer to deallocate.", ptr, size );
+    DLOG_IF_F( WARNING, parent->memoryTracking & MEMORY_TRACKING_REPORT_ACTIONS, "Allocator::MemoryBlocks::deallocate( %p, %zu ) - could not find pointer to deallocate.", ptr, size );
     return false;
 }
 

@@ -12,6 +12,9 @@ project( AER::Base
     LANGUAGES CXX
 )
 
+include(FetchContent)
+set( FETCHCONTENT_QUIET FALSE )
+
 set( CMAKE_CXX_STANDARD          23  )
 set( CMAKE_CXX_STANDARD_REQUIRED ON  )
 set( CMAKE_CXX_EXTENSIONS        OFF )
@@ -27,6 +30,13 @@ elseif ( APPLE )
 else()
     set( AER_LINUX 1 )
 endif()
+
+FetchContent_Declare( loguru
+	GIT_REPOSITORY https://github.com/emilk/loguru # can be a filesystem path
+	GIT_TAG        master
+)
+set( LOGURU_WITH_STREAMS TRUE )
+FetchContent_MakeAvailable( loguru )
 
 # AER::Base --------------------------------------------------------------------------------------
 set( BASE_LIB ${CMAKE_CURRENT_SOURCE_DIR}/lib )
@@ -53,7 +63,6 @@ set( HEADERS
     ${BASE_INC}/Base/EventListener.h
     ${BASE_INC}/Base/object.h
     ${BASE_INC}/Base/inherit.h
-    ${BASE_INC}/Base/log.h
     ${BASE_INC}/Base/platform.h
     ${BASE_INC}/Base/type_name.h
     ${BASE_INC}/Base/thread_utils.h
@@ -82,12 +91,7 @@ set( SOURCES
     ${BASE_SRC}/MemorySlots.cpp
 )
 
-set( LOGURU_SRC 
-    ${BASE_LIB}/loguru/loguru.hpp 
-    ${BASE_LIB}/loguru/loguru.cpp
-)
-
-add_library( base STATIC ${HEADERS} ${SOURCES} ${LOGURU_SRC} )
+add_library( base ${HEADERS} ${SOURCES} )
 target_precompile_headers(  base PUBLIC ${STD_HEADERS} )
 target_compile_features(    base PUBLIC cxx_std_23 )
 target_include_directories( base 
@@ -97,5 +101,6 @@ target_include_directories( base
     PRIVATE
         $<BUILD_INTERFACE:${BASE_LIB}>
 )
+target_link_libraries( base PUBLIC loguru::loguru )
 
 add_library( aer::base ALIAS base )

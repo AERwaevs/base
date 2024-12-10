@@ -16,9 +16,10 @@
 #include <sstream>
 #include <fstream>
 
+#include <loguru.hpp>
+
 #include "platform.h"
 #include "type_name.h"
-#include "log.h"
 #include "object.h"
 #include "inherit.h"
 

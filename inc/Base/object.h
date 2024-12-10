@@ -6,7 +6,6 @@
 #include "memory/ref_ptr.h"
 
 #include "type_name.h"
-#include "log.h"
 
 namespace aer
 {

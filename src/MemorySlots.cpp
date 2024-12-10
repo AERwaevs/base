@@ -1,6 +1,5 @@
 #include <Base/memory/MemorySlots.h>
-
-#include <Base/log.h>
+#include <loguru.hpp>
 
 namespace aer::mem
 {
@@ -14,7 +13,7 @@ MemorySlots::MemorySlots( size_t availableMemorySize, MemoryTracking tracking )
 std::optional<offset_t> MemorySlots::reserve( size_t size, size_t alignment )
 {
     const auto report = memoryTracking & MEMORY_TRACKING_REPORT_ACTIONS;
-    AE_INFO_IF( report, "MemorySlots::reserve( %zu, %zu )", size, alignment );
+    DLOG_IF_F( INFO, report, "MemorySlots::reserve( %zu, %zu )", size, alignment );
 
     if( full() ) return std::nullopt;
     
@@ -41,24 +40,24 @@ std::optional<offset_t> MemorySlots::reserve( size_t size, size_t alignment )
         _reservedMemory.emplace( alignedStart, size );
         return alignedStart;
     
-        AE_INFO_IF( report, "MemorySlots::reserve() - %zu bytes reserved at offset %zu.", size, alignedStart );
+        DLOG_IF_F( INFO, report, "MemorySlots::reserve() - %zu bytes reserved at offset %zu.", size, alignedStart );
     }
 
-    AE_INFO_IF( report, "MemorySlots::reserve() - %zu bytes requested, but no slot was big enough.", size );
+    DLOG_IF_F( INFO, report, "MemorySlots::reserve() - %zu bytes requested, but no slot was big enough.", size );
     return std::nullopt;
 }
 
 bool MemorySlots::release( offset_t offset, size_t size )
 {
     const auto report = memoryTracking & MEMORY_TRACKING_REPORT_ACTIONS;
-    AE_INFO_IF( report, "MemorySlots::release( %zu )", offset );
+    DLOG_IF_F( INFO, report, "MemorySlots::release( %zu )", offset );
 
     auto itr = _reservedMemory.find( offset );
     if( itr == _reservedMemory.end() ) return false; // entry not found
 
     if( size != itr->second )
     {
-        AE_INFO_IF( report, "MemorySlots::release() - %zu bytes requested, but %zu bytes were reserved.", size, itr->second );
+        DLOG_IF_F( INFO, report, "MemorySlots::release() - %zu bytes requested, but %zu bytes were reserved.", size, itr->second );
         size = itr->second;
     }
 
@@ -98,21 +97,21 @@ bool MemorySlots::release( offset_t offset, size_t size )
 void MemorySlots::report() const
 {
     LOG_SCOPE_F( WARNING, "MemorySlots::report()" );
-    AE_INFO( "Total available memory: %zu bytes.", _totalMemorySize );
-    AE_INFO( "Total reserved memory:  %zu bytes.", totalReservedSize() );
-    AE_INFO( "Total free memory:      %zu bytes.", totalAvailableSize() );
-    AE_INFO( "Total used memory:      %zu bytes.", _totalMemorySize - totalAvailableSize() );
+    DLOG_F( INFO, "Total available memory: %zu bytes.", _totalMemorySize );
+    DLOG_F( INFO, "Total reserved memory:  %zu bytes.", totalReservedSize() );
+    DLOG_F( INFO, "Total free memory:      %zu bytes.", totalAvailableSize() );
+    DLOG_F( INFO, "Total used memory:      %zu bytes.", _totalMemorySize - totalAvailableSize() );
 
-    AE_INFO( "Available memory slots:" );
+    DLOG_F( INFO, "Available memory slots:" );
     for( auto& slot : _availableMemory )
     {
-        AE_INFO( "  %zu bytes at offset %zu.", slot.first, slot.second );
+        DLOG_F( INFO, "  %zu bytes at offset %zu.", slot.first, slot.second );
     }
 
-    AE_INFO( "Reserved memory slots:" );
+    DLOG_F( INFO, "Reserved memory slots:" );
     for( auto& slot : _reservedMemory )
     {
-        AE_INFO( "  %zu bytes at offset %zu.", slot.second, slot.first );
+        DLOG_F( INFO, "  %zu bytes at offset %zu.", slot.second, slot.first );
     }
 }
 
@@ -122,7 +121,7 @@ bool MemorySlots::check() const
 
     if( _availableMemory.size() != _offsetSizes.size() )
     {
-        AE_ERROR( "Available memory size (%zu) does not match offset sizes (%zu).", _availableMemory.size(), _offsetSizes.size() );
+        DLOG_F( ERROR, "Available memory size (%zu) does not match offset sizes (%zu).", _availableMemory.size(), _offsetSizes.size() );
         return false;
     }
 
@@ -132,7 +131,7 @@ bool MemorySlots::check() const
 
     if( computedSize != _totalMemorySize )
     {
-        AE_ERROR( "Computed size (%zu) does not match total available size (%zu).", computedSize, _totalMemorySize );
+        DLOG_F( ERROR, "Computed size (%zu) does not match total available size (%zu).", computedSize, _totalMemorySize );
         report();
         return false;
     }
